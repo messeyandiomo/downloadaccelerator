@@ -1,0 +1,21 @@
+apply plugin: 'java'
+
+sourceSets {
+   main {
+      java {
+         srcDir 'src'
+      }
+   }
+}
+
+repositories {
+   jcenter()
+}
+
+jar {
+    baseName = 'downloadaccelerator'
+    version = '1.0'
+    manifest {
+       attributes 'Main-Class': 'DaServer'
+    }	
+}

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=Download Accelerator Server
+Exec=downloadacceleratorserver --autostart
+Terminal=false
+X-GNOME-Autostart-enabled=true
+Icon=${SNAP}/meta/gui/daclogo.png
+Type=Application
+GenericName=Download Accelerator Server
+Comment=A free tool to structure and organise your information with mind mapping
+Keywords=Mindmaps; Knowledge management; Organize information; Brainstorming;
+Name[fr_FR]=downloadaccelerator-server.desktop
