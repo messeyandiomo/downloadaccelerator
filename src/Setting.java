@@ -8,15 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
@@ -39,17 +32,10 @@ public class Setting extends JFrame{
 	private JTextField parameterDestination = new JTextField();
 	private JButton buttonDestination = new JButton("...");
 	private JPanel containerDestination = new JPanel();
-	private JLabel labelTemp = new JLabel("Temp");
-	private JTextField parameterTemp = new JTextField();
-	private JButton buttonTemp = new JButton("...");
-	private JPanel containerTemp = new JPanel();
 	private JLabel labelFileName = new JLabel("Filename");
 	private JTextField parameterFileName = new JTextField();
 	private JLabel labelSizeFileName = new JLabel("", JLabel.CENTER);
 	private JPanel containerFileName = new JPanel();
-	private JLabel labelSubDownloads = new JLabel("SubDownloads");
-	private JSpinner paramaterSubDownloads = new JSpinner(new SpinnerNumberModel(10, 1, 20, 1));
-	private JPanel containerSubDownloads = new JPanel();
 	private JButton buttonCancel = new JButton("Cancel");
 	private JButton buttonStart = new JButton("Launch");
 	private JPanel containerStart = new JPanel();
@@ -63,7 +49,6 @@ public class Setting extends JFrame{
     private int largeurAdded = 60;
     private int largeurRigidArea = 3;
     private int largeurWidget = largeurLabel+largeurParameter+largeurAdded+3*largeurRigidArea;
-    private int largeurSubDownloads = 40;
     private int largeurButton = (largeurParameter - largeurRigidArea)/4;
     
     private Dimension dimLabel = new Dimension(largeurLabel, hauteurWidget);
@@ -72,14 +57,15 @@ public class Setting extends JFrame{
     private Dimension dimHRigidArea = new Dimension(largeurRigidArea, 0);
     private Dimension dimVRigidArea = new Dimension(0, largeurRigidArea);
     
-    private String filename;//nom final du fichier à télécharger
-    private String logoFileName;//nom du fichier image qui servira de logo
-    private long filesize;//taille du fichier à télécharger
-    private URL url;//url du fichier à télécharger
+    private DownloadProperties downloadProperties = null;
+    private DownloadDirectories downloadDirectories = new DownloadDirectories();
+    private FileProperties fileProperties = null;
+    private RequestProperties requestProperties = null;
+    private SubDownloadPropertiesFactoriesManager subDownloadPropertiesFactoriesManager = null;
 	
 	public Setting() {
         
-		buildSetting();        
+		buildGuiSetting();        
         labelIconUrl.setVisible(false);
         
         this.setContentPane(container);
@@ -90,7 +76,7 @@ public class Setting extends JFrame{
 	
 	public Setting(String url) {
 		
-		buildSetting();
+		buildGuiSetting();
 		this.parameterUrl.setText(url);
 		labelIconUrl.setVisible(false);
 		
@@ -102,22 +88,12 @@ public class Setting extends JFrame{
 	
 	public Setting(String filename, String fileType, long contentLength, String url) {
 		
-		buildSetting();
+		buildGuiSetting();
 		this.parameterUrl.setText(url);
-		this.buttonUrl.setVisible(false);
-		this.labelIconUrl.setVisible(true);
-		this.logoFileName = drawLogo(fileType.split("/")[0], fileType.split("/")[1], this.labelIconUrl);
-		this.labelSizeFileName.setText(DownloadControl.getInstance().convertSize(contentLength));
-		this.filename = filename + "." + fileType.split("/")[1];
-		this.parameterFileName.setText(this.filename);
-		this.filesize = contentLength;
-		try {
-			this.url = new URL(url);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		container.add(containerBottom);
+		String nameOfFile = filename + "." + fileType.split("/")[1];
+		this.fileProperties = new FileProperties(url, nameOfFile, fileType.split("/")[0], fileType.split("/")[1], contentLength);
+		
+		prepareSetting();
 		
 		this.setContentPane(container);
         SwingUtilities.updateComponentTreeUI(container);
@@ -125,19 +101,23 @@ public class Setting extends JFrame{
         this.setVisible(true);
 	}
 	
+	public Setting(String filename, String fileType, long contentLength, String url, String useragent, String cookies) {
+		
+		this(filename, fileType, contentLength, url);
+		requestProperties = new RequestProperties(useragent, cookies);
+	}
 	
-	void buildSetting() {
+	
+	void buildGuiSetting() {
 		
 		Font font = new Font("Serif", Font.BOLD, 12);
 		
-		//changeLookAndFell();
-		//setUIFont(new FontUIResource(font));
 		UIManager.put("Label.font", font);//modification de la police des labels
 		UIManager.put("Button.font", font);//modification de la police des boutons
 		
 		this.setTitle("Create Download");
 		try {
-			this.setIconImage(ImageIO.read(new File(DownloadControl.getInstance().getPathLogo())));
+			this.setIconImage(ImageIO.read(new File(DownloadDirectories.getPathLogo())));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -181,30 +161,8 @@ public class Setting extends JFrame{
         containerDestination.add(buttonDestination);
         containerDestination.add(Box.createRigidArea(dimHRigidArea));
         
-        labelTemp.setPreferredSize(dimLabel);
-        parameterTemp.setEditable(false);
-        parameterTemp.setPreferredSize(dimParameter);
-        buttonTemp.setPreferredSize(dimAdded);
-        buttonTemp.setContentAreaFilled(false);
-        containerTemp.setLayout(new BoxLayout(containerTemp, BoxLayout.LINE_AXIS));
-        containerTemp.add(Box.createRigidArea(dimHRigidArea));
-        containerTemp.add(labelTemp);
-        containerTemp.add(parameterTemp);
-        containerTemp.add(Box.createRigidArea(dimHRigidArea));
-        containerTemp.add(buttonTemp);
-        containerTemp.add(Box.createRigidArea(dimHRigidArea));
-        
-        parameterDestination.setText(DownloadControl.getInstance().getHomeDirectory());
-        parameterTemp.setText(DownloadControl.getInstance().getTempDirectory());
-        /*if(System.getProperty("os.name").matches("Linux")) {
-        	parameterDestination.setText(System.getenv("HOME"));
-        	parameterTemp.setText("/tmp");
-        }
-        else if(System.getProperty("os.name").matches("Windows")){
-        	parameterDestination.setText(System.getenv("%HOMEPATH%"));
-        	parameterTemp.setText(System.getenv("%TEMP%"));
-        }*/
-        
+        parameterDestination.setText(downloadDirectories.getDestinationDirectory());
+                
         labelFileName.setPreferredSize(dimLabel);
         parameterFileName.setPreferredSize(dimParameter);
         labelSizeFileName.setPreferredSize(dimAdded);
@@ -216,18 +174,11 @@ public class Setting extends JFrame{
         containerFileName.add(labelSizeFileName);
         containerFileName.add(Box.createRigidArea(dimHRigidArea));
         
-        labelSubDownloads.setPreferredSize(dimLabel);
-        paramaterSubDownloads.setPreferredSize(new Dimension(largeurSubDownloads, hauteurWidget));
-        containerSubDownloads.setLayout(new BoxLayout(containerSubDownloads, BoxLayout.LINE_AXIS));
-        containerSubDownloads.add(Box.createRigidArea(dimHRigidArea));
-        containerSubDownloads.add(labelSubDownloads);
-        containerSubDownloads.add(paramaterSubDownloads);
-        containerSubDownloads.add(Box.createRigidArea(new Dimension(largeurAdded+largeurParameter+largeurRigidArea-largeurSubDownloads, hauteurWidget)));
-        
         buttonCancel.setPreferredSize(new Dimension(largeurButton, hauteurWidget));
         buttonCancel.setContentAreaFilled(false);
         buttonStart.setPreferredSize(new Dimension(largeurButton, hauteurWidget));
         buttonStart.setContentAreaFilled(false);
+        buttonStart.setEnabled(false);
         containerStart.setLayout(new BoxLayout(containerStart, BoxLayout.LINE_AXIS));
         containerStart.add(Box.createRigidArea(new Dimension((largeurWidget-largeurParameter)/2, 0)));
         containerStart.add(buttonCancel);
@@ -239,11 +190,9 @@ public class Setting extends JFrame{
         containerBottom.add(Box.createRigidArea(dimVRigidArea));
 		containerBottom.add(containerDestination);
 		containerBottom.add(Box.createRigidArea(dimVRigidArea));
-        containerBottom.add(containerTemp);
+        
         containerBottom.add(Box.createRigidArea(dimVRigidArea));
         containerBottom.add(containerFileName);
-        containerBottom.add(Box.createRigidArea(dimVRigidArea));
-        containerBottom.add(containerSubDownloads);
         containerBottom.add(Box.createRigidArea(new Dimension(largeurWidget, hauteurWidget)));
         containerBottom.add(containerStart);
         containerBottom.add(Box.createRigidArea(dimVRigidArea));
@@ -254,13 +203,49 @@ public class Setting extends JFrame{
         //creation des ecouteurs de boutons
         buttonUrl.addActionListener(new ButtonListenerUrl());
         buttonDestination.addActionListener(new ButtonListener());
-        buttonTemp.addActionListener(new ButtonListener());
         buttonCancel.addActionListener(new ButtonListenerCancel());
         parameterFileName.addKeyListener(new FileNameListener());
         buttonStart.addActionListener(new startButtonListener());
         
         window = this;
 
+	}
+	
+	void prepareSetting() {
+		
+		downloadProperties = new DownloadProperties(fileProperties.getUrl());
+		subDownloadPropertiesFactoriesManager = new SubDownloadPropertiesFactoriesManager(downloadProperties);
+		subDownloadPropertiesFactoriesManager.addObserver(new Observer() {
+			
+			@Override
+			public void update(boolean complete, long infos) {
+				// TODO Auto-generated method stub
+				if(complete)
+					buttonStart.setEnabled(true);
+			}
+		});
+		//verify if a file with the same name already exist in temporarily folder
+		int res = 0;
+		String[] choices = {"Yes", "No"};
+		String defaultChoice = choices[0];
+		while(fileDownloadExist()) {
+			res = JOptionPane.showOptionDialog(window, "Do you want to continue(Yes) or make another download(No) ?", "This file is already begining to be download", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, choices, defaultChoice);
+			if(res == JOptionPane.NO_OPTION) {
+				do {
+					generateAnotherFileName();
+				}while(fileDownloadExist());
+				break;
+			}
+			if(res == JOptionPane.YES_OPTION)
+				break;
+		}
+		createSubDownloadProperties();
+		
+		buttonUrl.setVisible(false);
+		parameterFileName.setText(fileProperties.getFilename());
+		drawLogo(labelIconUrl);
+		labelSizeFileName.setText(DownloadControl.convertSize(fileProperties.getSize()));
+		container.add(containerBottom);
 	}
 	
 	
@@ -302,30 +287,10 @@ public class Setting extends JFrame{
 		}
 	}
 	
-	String drawLogo(String type, String subtype, JLabel labelicon) {
+	void drawLogo(JLabel labelicon) {
 		
-		String filelogo = "inconnu";
-		String imagesDirectory = DownloadControl.getInstance().getImagesDirectory();
-		if(!type.isEmpty()) {
-			File dir = new File(imagesDirectory);
-			File[] fileslist = dir.listFiles(new FilenameFilter() {
-				
-				@Override
-				public boolean accept(File dir, String name) {
-					// TODO Auto-generated method stub
-					return (name.contains(type) || (!subtype.isEmpty() && name.contains(subtype)));
-				}
-			});
-			if(fileslist.length >= 2) {
-				filelogo = subtype;
-			}
-			else if(fileslist.length == 1 && fileslist[0].getName().contains(type)) {
-				filelogo = type;
-			}
-		}
-		filelogo += ".jpg";
 		try {
-			Image img = ImageIO.read(new File(imagesDirectory + filelogo)).getScaledInstance(hauteurWidget, hauteurWidget, Image.SCALE_SMOOTH);
+			Image img = ImageIO.read(new File(fileProperties.getFileLogo())).getScaledInstance(hauteurWidget, hauteurWidget, Image.SCALE_SMOOTH);
 			ImageIcon icon = new ImageIcon(img);
 			labelicon.setIcon(icon);
 		} catch (IOException e1) {
@@ -334,20 +299,52 @@ public class Setting extends JFrame{
 		}
 		labelicon.setVisible(true);
 		
-		return filelogo;
 	}
 	
-	// Decodes a URL encoded string using UTF-8
-	String decodeString(String value) {
-		try {
-			return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			return value;//e1.printStackTrace();
+	/****
+	 * verify if download of file has already begin by another task **
+	 * ***/
+	boolean fileDownloadExist() {
+		return new File(downloadDirectories.getTempDirectory() + fileProperties.getFilename() + "0").exists();
+	}
+	
+	/****
+	 * generate a new temporarily file name *
+	 * ***/
+	String generateAnotherFileName() {
+		
+		fileProperties.setFilename(fileProperties.getFilename() + "bis");
+		return downloadDirectories.getTempDirectory() + fileProperties.getFilename();
+	}
+	
+	/****
+	 * creation of sub download properties
+	 * @param 
+	 * @return
+	 */
+	void createSubDownloadProperties() {
+		
+		long filesize = fileProperties.getSize();
+		int subdownloadcount = downloadProperties.getSubDownloadCount();
+		URL url = fileProperties.getUrl();
+		String temporarilyfilename = downloadDirectories.getTempDirectory() + fileProperties.getFilename();
+		long restOfSize = filesize%subdownloadcount;//surplus of bytes
+		long subdownloadsize = (filesize - restOfSize)/subdownloadcount;//size of sub-download
+		long firstoctet = 0;
+		for (int i = 0; i < subdownloadcount; i++) {
+			if(i == 0) {
+				new SubDownloadPropertiesFactory(subDownloadPropertiesFactoriesManager, i, firstoctet, subdownloadsize + restOfSize, temporarilyfilename, url, requestProperties);
+				firstoctet = (subdownloadsize + restOfSize);
+			}
+			else {
+				new SubDownloadPropertiesFactory(subDownloadPropertiesFactoriesManager, i, firstoctet, subdownloadsize, temporarilyfilename, url, requestProperties);
+				firstoctet += subdownloadsize;
+			}
 		}
 	}
+	
 
-	//classe d'écoute du bouton ok
+	//listener class of button OK
 	class ButtonListenerUrl implements ActionListener{
 		
 		public void actionPerformed(ActionEvent e) {
@@ -358,44 +355,14 @@ public class Setting extends JFrame{
 				parameterUrl.requestFocus();
 			}
 			else {
-				try {
-					url = new URL(parameterUrl.getText());
-					DownloadControl control = DownloadControl.getInstance();
-					FileProperties properties = new FileProperties();
-					int request = control.requestFileProperties(url, properties);
-					if(request == HttpURLConnection.HTTP_OK) {
-						container.remove(containerErreur);
-						buttonUrl.setVisible(false);
-						filename = decodeString(Paths.get(parameterUrl.getText()).getFileName().toString());
-						parameterFileName.setText(filename);
-						logoFileName = drawLogo(properties.getType(), properties.getSubType(), labelIconUrl);
-						filesize = properties.getSize();
-						if(filesize < 0) {
-							paramaterSubDownloads.setValue(1);
-							paramaterSubDownloads.setEnabled(false);
-						}
-						labelSizeFileName.setText(DownloadControl.getInstance().convertSize(filesize));
-						container.add(containerBottom);
-					}
-					else {
-						container.add(containerErreur);
-						if(request == HttpURLConnection.HTTP_UNAVAILABLE) {
-							labelErreur.setText("Service indisponible !!!");
-						}
-						else if(request == HttpURLConnection.HTTP_NOT_FOUND) {
-							labelErreur.setText("Fichier non trouvé !!!");
-						}
-						else if(request == HttpURLConnection.HTTP_UNAUTHORIZED) {
-							labelErreur.setText("Accès au fichier non autorizé !!!");
-						}
-						else if(request == -2) {
-							labelErreur.setText("Réseau indisponible !!!");
-						}
-					}
-				} catch (MalformedURLException e2) {
-					// TODO Auto-generated catch block
+				fileProperties = new FileProperties(parameterUrl.getText());
+				if(!fileProperties.hasError()) {
+					container.remove(containerErreur);
+					prepareSetting();
+				}
+				else {
 					container.add(containerErreur);
-					labelErreur.setText("Url mal formée !!!");
+					labelErreur.setText(fileProperties.getError());
 					parameterUrl.requestFocus();
 				}
 			}
@@ -411,11 +378,10 @@ public class Setting extends JFrame{
 			JFileChooser choix = new JFileChooser();
 			choix.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			if(choix.showOpenDialog(choix.getParent()) == JFileChooser.APPROVE_OPTION){
+				String dirPath = choix.getSelectedFile().getAbsolutePath();
 				if(e.getSource() == buttonDestination) {
-					parameterDestination.setText(choix.getSelectedFile().getAbsolutePath());
-				}
-				else {
-					parameterTemp.setText(choix.getSelectedFile().getAbsolutePath());
+					parameterDestination.setText(dirPath);
+					downloadDirectories.setDestinationDirectory(dirPath);
 				}
 			}
 		}
@@ -441,8 +407,6 @@ public class Setting extends JFrame{
 			// TODO Auto-generated method stub
 			Pattern p = Pattern.compile("[a-zéèàA-Z0-9]");
 			Pattern p2 = Pattern.compile("[a-zéèàA-Z_0-9-]|\\.");
-			//Pattern p3 = Pattern.compile("([a-zéèàA-Z_0-9\\-]*(\\.)?)*");
-			// && (p3.matcher(parameterFileName.getText()).matches())
 			boolean filenameIsEmpty = parameterFileName.getText().isEmpty();
 			Character keyChar = arg0.getKeyChar();
 			if((filenameIsEmpty && !(p.matcher(keyChar.toString()).matches())) || (!filenameIsEmpty && !((p2.matcher(keyChar.toString()).matches())))) {
@@ -469,7 +433,8 @@ public class Setting extends JFrame{
 	class startButtonListener implements ActionListener{
 		
 		public void actionPerformed(ActionEvent ev) {
-			DownloadWindow newDownload = new DownloadWindow(logoFileName, url, parameterFileName.getText(), parameterDestination.getText()+"/", parameterTemp.getText()+"/", filesize,(int) paramaterSubDownloads.getValue());
+			fileProperties.setFilename(parameterFileName.getText());
+			DownloadWindow newDownload = new DownloadWindow(downloadProperties, downloadDirectories, fileProperties);
 			DownloadWindowsContainer containerWindow = DownloadWindowsContainer.getInstance();
 			containerWindow.addDownloadWindow(newDownload);
 			containerWindow.toFront();

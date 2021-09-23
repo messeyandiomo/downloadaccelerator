@@ -32,7 +32,7 @@ public class DownloadWindowsContainer extends JFrame {
 	private DownloadWindowsContainer() {
 		
 		try {
-			this.setIconImage(ImageIO.read(new File(DownloadControl.getInstance().getPathLogo())));
+			this.setIconImage(ImageIO.read(new File(DownloadDirectories.getPathLogo())));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -5,76 +5,82 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
+import java.util.ArrayList;
 
-public class Download extends Thread {
+public class Download extends Thread implements Observable {
 	
-	private int subDownloadEndedCount = 0;
-	private int subDownloadCount = 0;
-	private String filename = "";
-	private String filesize = "";
-	private String temp = "";
-	private String destination = "";
-	private URL url;
-	private DownloadWindow downloadwindow;
-	private SubDownload[] subDownloadSet;
-	private InfosManager infosManager;
-	private StateManager stateManager;
-	private File[] subDownloadFile;
-	private File fileDownloaded;
+	/**********
+	 * 
+	 */
+	private DownloadDirectories downloadDirectories;
+	private DownloadProperties downloadProperties;
+	private String fileName;
+	private StatisticsManager staticsticsManager;
+	private ArrayList<Observer> listObserver = new ArrayList<Observer>();
+	private File[] filesOfSubDownloads;
+	private File downloadedFile;
+	private long downloaded = 0;
+	private int numberOfSubDownloadsCompleted;
+	private int numberOfSubDownloadsNotCompleted;
+	private int numberOfSubDownloads;
+	private boolean complete = false;
 	
-	private boolean update = true;
-	private long currentSize = 0;
 	
-	public Download(DownloadWindow downloadwindow, URL url, String destination, String temp, String filename, int subDownloadCount) {
-		// TODO Auto-generated constructor stub
+	
+	/*************
+	 * 
+	 * @param statisticsmanager
+	 * @param fileproperties
+	 * @param downloadproperties
+	 */
+	public Download(StatisticsManager statisticsmanager, DownloadProperties downloadproperties, DownloadDirectories downloaddirectories, String filename) {
 		super();
-		this.downloadwindow = downloadwindow;
-		this.setUrl(url);
-		this.setDestination(destination);
-		this.setTemp(temp);
-		this.setFilename(filename);
-		this.subDownloadCount = subDownloadCount;
-		subDownloadFile = new File[subDownloadCount];
+		this.setDownloadDirectories(downloaddirectories);
+		this.setDownloadProperties(downloadproperties);
+		this.setStaticsticsManager(statisticsmanager);
+		this.setFileName(filename);
+		this.numberOfSubDownloads = downloadProperties.getSubDownloadCount();
+		filesOfSubDownloads = new File[numberOfSubDownloads];
 		this.start();
 	}
 	
 	public void run() {
-		
-		subDownloadSet = new SubDownload[subDownloadCount];
-		infosManager = new InfosManager(this);
-		if(this.getDownloadWindow().getFilesize() <= 0) {
-			subDownloadSet[0] = new SubDownload(this, infosManager, 0);
-		}
-		else {
-			long firstoctet = 0, subdownloadsize;
-			for(int subdownloadnumber = 0; subdownloadnumber < subDownloadCount; subdownloadnumber++) {
-				subdownloadsize = downloadwindow.getSubDownloadProgressBar(subdownloadnumber).getFilesize();
-				subDownloadSet[subdownloadnumber] = new SubDownload(this, infosManager, subdownloadnumber, firstoctet, subdownloadsize);
-				firstoctet += subdownloadsize;
+		boolean iscompleted = false;
+		while(true) {
+			try {
+				synchronized (this) {
+					wait();
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			iscompleted = isCompleted();
+			if(iscompleted)
+				break;
+			else {
+				this.staticsticsManager.pause();
+				while(!staticsticsManager.isSuspended()) yield();
+				this.updateObserver();
 			}
 		}
-		stateManager = new StateManager(this);
-		//attente de la fin des sous téléchargements
-		waitForSubDownloads();
-		int sousTelTermine = getSubDownloadEndedCount();
-		if(subDownloadCount == sousTelTermine) {
-			infosManager.stop2();//interruption du manager d'informations(vitesse et durée)
-			while(infosManager.isAlive()) yield();
-			downloadwindow.prepareForConcat();
-			fileDownloaded = new File(destination + filename);
+		int numberofcomplete = this.getNumberOfSubDownloadsCompleted();
+		if(numberofcomplete == numberOfSubDownloads) {
+			staticsticsManager.complete();
+			while(staticsticsManager.isAlive()) yield();
+			downloadedFile = new File(downloadDirectories.getDestinationDirectory() + fileName);
 			try {
-				OutputStream out = new FileOutputStream(fileDownloaded);
-				InputStream in;
+				OutputStream out = new FileOutputStream(downloadedFile);
+				InputStream in = null;
 				byte[] buf = new byte[1024];
 				int b = 0;
-				for(int i = 0; i < subDownloadCount; i++) {
-					//concatenation des fichiers téléchargés
-					in = new FileInputStream(subDownloadFile[i]);
+				for (int i = 0; i < filesOfSubDownloads.length; i++) {
+					in = new FileInputStream(filesOfSubDownloads[i]);
 					try {
 						while((b = in.read(buf)) > 0) {
 							out.write(buf, 0, b);
-							downloadwindow.getFileConcatProgressBar().update(b);//mise à jour de la barre de concaténation
+							this.setDownloaded(b);
+							this.updateObserver();
 						}
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -82,7 +88,7 @@ public class Download extends Thread {
 					}
 					try {
 						in.close();
-						subDownloadFile[i].delete();
+						filesOfSubDownloads[i].delete();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -90,7 +96,6 @@ public class Download extends Thread {
 				}
 				try {
 					out.close();
-					downloadwindow.setEndOf(filesize);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -99,191 +104,113 @@ public class Download extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			stateManager.stop2();
 		}
 	}
 	
-	/**
-	 * @return the filename
+	/*********
+	 * 
 	 */
-	public String getFilename() {
-		return filename;
+	
+	
+	/***************
+	 * 
+	 */
+
+	@Override
+	public void addObserver(Observer obs) {
+		// TODO Auto-generated method stub
+		this.listObserver.add(obs);
 	}
 
-	/**
-	 * @param filename the filename to set
-	 */
-	public void setFilename(String filename) {
-		this.filename = filename;
+	@Override
+	public void updateObserver() {
+		// TODO Auto-generated method stub
+		boolean iscompleted = this.isCompleted();
+		long downloaded = this.getDownloaded();
+		for(Observer obs : this.listObserver)
+			obs.update(iscompleted, downloaded);
 	}
 
-	/**
-	 * @return the temp
-	 */
-	public String getTemp() {
-		return temp;
+	@Override
+	public void delObserver() {
+		// TODO Auto-generated method stub
+		this.listObserver = new ArrayList<Observer>();
 	}
 
-	/**
-	 * @param temp the temp to set
-	 */
-	public void setTemp(String temp) {
-		this.temp = temp;
+
+	public DownloadDirectories getDownloadDirectories() {
+		return downloadDirectories;
 	}
 
-	/**
-	 * @return the destination
-	 */
-	public String getDestination() {
-		return destination;
+	public void setDownloadDirectories(DownloadDirectories downloaddirectories) {
+		this.downloadDirectories = downloaddirectories;
 	}
 
-	/**
-	 * @param destination the destination to set
-	 */
-	public void setDestination(String destination) {
-		this.destination = destination;
+	public DownloadProperties getDownloadProperties() {
+		return downloadProperties;
 	}
 
-	/**
-	 * @return the url
-	 */
-	public URL getUrl() {
-		return url;
+	public void setDownloadProperties(DownloadProperties downloadproperties) {
+		this.downloadProperties = downloadproperties;
 	}
 
-	/**
-	 * @param url the url to set
-	 */
-	public void setUrl(URL url) {
-		this.url = url;
-	}
-	
-	/**
-	 * @return the subDownloadCount
-	 */
-	public int getSubDownloadCount() {
-		return subDownloadCount;
+	public StatisticsManager getStaticsticsManager() {
+		return staticsticsManager;
 	}
 
-	/**
-	 * @param subDownloadCount the subDownloadCount to set
-	 */
-	public void setSubDownloadCount(int subDownloadCount) {
-		this.subDownloadCount = subDownloadCount;
-	}
-	
-	/**
-	 * @return update
-	 */
-	public synchronized boolean getUpdate() {
-		return update;
-	}
-	
-	
-	
-	//obtention du sous téléchargement i
-	public SubDownload getSubDownload(int i) {
-		return this.subDownloadSet[i];
-	}
-	
-	
-	//obtenir infoManager
-	public InfosManager getInfosManager() {
-		return infosManager;
+	public void setStaticsticsManager(StatisticsManager staticsticsManager) {
+		this.staticsticsManager = staticsticsManager;
 	}
 
-	/**
-	 * @return the currentSize
-	 */
-	public synchronized long getCurrentSize() {
-		return currentSize;
-	}
-
-	
-	public DownloadWindow getDownloadWindow() {
-		return downloadwindow;
+	private synchronized int getNumberOfSubDownloadsCompleted() {
+		return numberOfSubDownloadsCompleted;
 	}
 	
-	
-	public synchronized int getSubDownloadEndedCount() {
-		return subDownloadEndedCount;
-	}
-	
-	
-	private void waitForSubDownloads() {
-		filesize = DownloadControl.getInstance().convertSize(downloadwindow.getFilesize());
-		boolean testupdate = getUpdate();
-		while(testupdate) {
-			try {
-				synchronized (this) {
-					wait();
-				}
-				this.getDownloadWindow().getDownloadWindowCurrentSizeInfos().setText(getInfos());
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			testupdate = getUpdate();
-		}
-	}
-	
-	//incrémentation du nombre de sous téléchargement terminés
-	private synchronized int incrementSubDownloadEndedCount() {
-		int retour = ++subDownloadEndedCount;
-		if(retour == subDownloadCount) {
-			update = false;
-			notify();
-		}
-		return retour;
-	}
-	
-	
-	public synchronized void freeDownload() {
-		update = false;
-		notify();
-	}
-	
-	
-	public void endOfSubDownload(int subdownloadnumber, File file) {
 		
-		subDownloadFile[subdownloadnumber] = file;
-		/*int currentsubDownloadEndedCount = */incrementSubDownloadEndedCount();
-		/*if(currentsubDownloadEndedCount == subDownloadCount) {
-			freeDownload();
-		}*/
+	public synchronized void reset() {
+		numberOfSubDownloadsCompleted = 0;
+		numberOfSubDownloadsNotCompleted = 0;
 	}
 	
-	
-	//suspension du téléchargement
-	public void suspend2() {
-		stateManager.suspend2();
+
+	public synchronized void notifyComplete(int subdownloadnumber, File file) {
+		filesOfSubDownloads[subdownloadnumber] = file;
+		this.numberOfSubDownloadsCompleted++;
+		if(numberOfSubDownloadsCompleted == numberOfSubDownloads)
+			this.complete = true;
+		if((numberOfSubDownloadsCompleted + numberOfSubDownloadsNotCompleted) == numberOfSubDownloads)
+			notify();
+	}
+
+
+	public synchronized void notifyNotComplete() {
+		this.numberOfSubDownloadsNotCompleted++;
+		if((numberOfSubDownloadsCompleted + numberOfSubDownloadsNotCompleted) == numberOfSubDownloads)
+			notify();
 	}
 	
-	
-	//reprise du téléchargement précédemment suspendu
-	public void resume2() {
-		stateManager.resume2();
+	private synchronized boolean isCompleted() {
+		return complete;
 	}
 	
-	
-	//annulation du téléchargement
-	public void stop2() {
-		stateManager.stop2();
+
+	private long getDownloaded() {
+		return downloaded;
 	}
 	
-	
-	//mise à jour de la taille du téléchargement
-	public synchronized void wakeUp(long sizeAdded) {
-		currentSize += sizeAdded;
-		notify();
+
+	private void setDownloaded(long downloaded) {
+		this.downloaded += downloaded;
 	}
 	
-	
-	//mise en place de l'information sur le téléchargement
-	private synchronized String getInfos() {
-		String retour = DownloadControl.getInstance().convertSize(currentSize) + "/" + filesize;
-		return retour;
+
+	public String getFileName() {
+		return fileName;
 	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
 	
 }

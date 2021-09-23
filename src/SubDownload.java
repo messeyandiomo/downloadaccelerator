@@ -1,313 +1,176 @@
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
 
-public class SubDownload extends Thread {
+public class SubDownload extends Thread implements Observable {
 	
-	private String filename = "";
-	private String temp = "";
-	private URL url;
-	private int subdownloadnumber;
-	private long first;
 	private long size;
+	private long first;
 	private Download download;
-	private InfosManager infosManager;
-	private InputStream inputStream;
-	private OutputStream outputStream;
+	private int subdownloadnumber;
+	private File file;
+	private InputStream inputStream = null;
+	private OutputStream outputStream = null;
+	private ArrayList<Observer> listObserver = new ArrayList<Observer>();
+	private long downloaded = 0;
+	private boolean suspend = false;
+	private boolean cancel = false;
+	private boolean shutdown = false;
+	private SubDownloadProperties subDownloadProperties;
+	private int attempt = 3;
+	private boolean complete = false;
 	
-	private boolean continuer = true;
-	private boolean annuler = false;
 	
-	
-	public SubDownload(Download telechargement, InfosManager infosmanager, int subdownloadnumber, long first, long size) {
-		// TODO Auto-generated constructor stub
+	public SubDownload(Download download, int subdownloadnumber, boolean shutdown) {
 		super();
-		this.setDownload(telechargement);
-		setInfoManager(infosmanager);
-		this.setFilename(telechargement.getFilename());
-		this.setTemp(telechargement.getTemp());
-		this.setUrl(telechargement.getUrl());
+		this.setDownload(download);
 		this.setSubdownloadnumber(subdownloadnumber);
-		this.setFirst(first);
-		this.setSize(size);
-		this.start();
-		
-	}
-	
-	
-	public SubDownload(Download telechargement, InfosManager infosmanager, int subdownloadnumber) {
-		super();
-		this.setDownload(telechargement);
-		setInfoManager(infosmanager);
-		this.setFilename(telechargement.getFilename());
-		this.setFirst(0);
-		this.setSize(0);
-		this.setTemp(telechargement.getTemp());
-		this.setUrl(telechargement.getUrl());
-		this.setSubdownloadnumber(subdownloadnumber);
+		this.setShutdown(shutdown);
+		subDownloadProperties = this.download.getDownloadProperties().getSubDownloadProperties(this.subdownloadnumber);
+		this.file = subDownloadProperties.getFile();
+		this.setSize(subDownloadProperties.getSize());
+		this.setFirst(subDownloadProperties.getFirstOctet());
+		this.setDownloaded(subDownloadProperties.getDownloaded());
 		this.start();
 	}
 	
 	
 	public void run() {
-		
-		File file = new File(temp + filename + subdownloadnumber);
-		boolean testAnnuler;
-		long downloadedByteCount;
-		
-		do {
-			downloadedByteCount = checkFile(file);
-		}while(downloadedByteCount < 0);
-		if(downloadedByteCount >= 0) {
-			if(downloadedByteCount > 0) {
-				download.getDownloadWindow().getSubDownloadProgressBar(subdownloadnumber).update(downloadedByteCount);
-				download.wakeUp(downloadedByteCount);
+		if(downloaded > 0) {
+			if(shutdown) {
+				this.updateObserver();
+				this.download.getStaticsticsManager().update(downloaded);
 			}
-			setFirst(downloadedByteCount + first);
-			if(size <= 0)
-				requestEntireFile(file);
-			else {
-				if(downloadedByteCount < size) {
-					setSize(size - downloadedByteCount);
-					requestSplitedFile(file);
-				}
-			}
-			testAnnuler = checkCancel();
-			if(!testAnnuler)
-				download.endOfSubDownload(subdownloadnumber, file);
+			if(downloaded < size)
+				downloadFile();
+			else
+				complete = true;
 		}
+		else
+			downloadFile();
+		if(complete)
+			this.download.notifyComplete(subdownloadnumber, file);
+		else
+			if(!this.isCancel())
+				this.download.notifyNotComplete();
 	}
 	
-	//vérification de l'existence du file à télécharger et récupération de sa taille
-	long checkFile(File file) {
+	
+	void downloadFile() {
 		
-		long retour = 0;//size already downloaded
-		
-		if(file.exists()) {
-			InputStream in = null;
-			try {
-				in = new FileInputStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-				return -1;
-			}
-			byte[] buf = new byte[1024];
-			int b;
-			try {
-				while((b = in.read(buf)) != -1) {
-					retour += b;
-				}
-				in.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-				try {
-					in.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					//e1.printStackTrace();
-				}
-				return -2;
-			}
+		while((attempt != 0) && (!complete)) {
+			tryToDownloadFile();
+			if(complete)
+				break;
+			attempt--;
 		}
-		return retour;
 		
 	}
 	
 	
-	private void requestEntireFile(File file) {
+	void tryToDownloadFile() {
 		
-		createInputStream();
-		createOutputStream(file);
-		byte[] buf;
-		do {
-			buf = new byte[1024];
-		}while(buf == null);
-		int b = 0;
-		boolean testAnnuler;
-		long downloadedByteCount = 0;
-		boolean finish = false;
-		while(!finish) {
-			try {
-				while((b = inputStream.read(buf)) > 0) {
-					synchronized (this) {
-						outputStream.write(buf, 0, b);
-					}
-					downloadedByteCount += b;
-					download.getDownloadWindow().getSubDownloadProgressBar(subdownloadnumber).update(b);
-					download.wakeUp(b);
-					infosManager.update(b);
-					synchronized (this) {
-						while(!continuer && !annuler) {
-							try {
-								wait();
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-							}
-						}
-					}
-					testAnnuler = checkCancel();
-					if(testAnnuler) {
-						finish = true;
-						break;
-					}
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				setFirst(downloadedByteCount);
-				createInputStream();
-			}
-			if(b == 0)
-				finish = true;
-		}
-		synchronized (this) {
-			if(outputStream != null) {
+		boolean isCancel = false;
+		boolean isSuspend = false;
+		if(subDownloadProperties.getOutputStream() == null)
+			subDownloadProperties.createOutputStream();
+		this.outputStream = subDownloadProperties.getOutputStream();
+		while(subDownloadProperties.getInputStream() == null) {
+			subDownloadProperties.createInputStream();
+			isSuspend = this.isSuspended();
+			if(isSuspend) {
+				this.updateObserver();
 				try {
-					outputStream.close();
-				} catch (IOException e) {
+					synchronized (this) {
+						wait();
+					}
+					this.updateObserver();
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			isCancel = this.isCancel();
+			if(isCancel)
+				break;
 		}
-		if(inputStream != null) {
-			try {
-				inputStream.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	
-	private void requestSplitedFile(File file) {
 		
-		createInputStream();
-		createOutputStream(file);
-		byte[] buf;
-		do {
-			buf = new byte[1024];
-		}while(buf == null);
-		int b = 0;
-		long remainByteCount = size;
-		boolean testAnnuler;
-		while(remainByteCount > 0) {
-			try {
-				b = inputStream.read(buf);
-				if(b > 0) {
-					if(remainByteCount < b) {
-						synchronized (this) {
+		if(!isCancel) {
+			this.inputStream = subDownloadProperties.getInputStream();
+			byte[] buf = new byte[1024];
+			int b = 0;
+			long remainByteCount = size - downloaded;
+			
+			while(remainByteCount > 0) {
+				try {
+					b = inputStream.read(buf);
+					if(b > 0) {
+						if(remainByteCount < b) {
 							outputStream.write(buf, 0, (int) remainByteCount);
+							this.setDownloaded(remainByteCount);
+							this.subDownloadProperties.update(remainByteCount);
+							this.download.getStaticsticsManager().update(remainByteCount);
+							this.updateObserver();
+							remainByteCount = 0;
+							break;
 						}
-						download.getDownloadWindow().getSubDownloadProgressBar(subdownloadnumber).update(remainByteCount);
-						download.wakeUp(remainByteCount);
-						infosManager.update(remainByteCount);
-						remainByteCount = 0;
-					}
-					else {
-						synchronized (this) {
+						else {
 							outputStream.write(buf, 0, b);
+							this.setDownloaded(b);
+							this.subDownloadProperties.update(b);
+							this.download.getStaticsticsManager().update(b);
+							this.updateObserver();
+							remainByteCount -= b;
 						}
-						download.getDownloadWindow().getSubDownloadProgressBar(subdownloadnumber).update(b);
-						download.wakeUp(b);
-						infosManager.update(b);
-						remainByteCount -= b;
 					}
+					else
+						break;
+				}catch (IOException e) {
+					// TODO: handle exception
+					//e.printStackTrace();
+					this.subDownloadProperties.setInputStream(null);
+					break;
 				}
-			}catch (IOException e) {
-				// TODO: handle exception
-				this.setFirst(first + size - remainByteCount);
-				this.setSize(remainByteCount);
-				createInputStream();
-			}
-			synchronized (this) {
-				while(!continuer && !annuler) {
+				isSuspend = this.isSuspended();
+				if(isSuspend) {
+					this.updateObserver();
 					try {
-						wait();
+						synchronized (this) {
+							wait();
+						}
+						this.updateObserver();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
+				isCancel = this.isCancel();
+				if(isCancel)
+					break;
 			}
-			testAnnuler = checkCancel();
-			if(testAnnuler) {
-				break;
-			}
+			if(remainByteCount == 0)
+				complete = true;
 		}
-		synchronized (this) {
-			if(outputStream != null) {
-				try {
-					outputStream.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		if(inputStream != null) {
+		if(outputStream != null) {
 			try {
-				inputStream.close();
+				outputStream.close();
+				subDownloadProperties.setOutputStream(null);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-	}
-
-
-	/**
-	 * @return the filename
-	 */
-	public String getFilename() {
-		return filename;
-	}
-
-
-	/**
-	 * @param filename the filename to set
-	 */
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-
-	/**
-	 * @return the temp
-	 */
-	public String getTemp() {
-		return temp;
-	}
-
-
-	/**
-	 * @param temp the temp to set
-	 */
-	public void setTemp(String temp) {
-		this.temp = temp;
-	}
-
-
-	/**
-	 * @return the url
-	 */
-	public URL getUrl() {
-		return url;
-	}
-
-
-	/**
-	 * @param url the url to set
-	 */
-	public void setUrl(URL url) {
-		this.url = url;
+		if(inputStream != null) {
+			try {
+				inputStream.close();
+				subDownloadProperties.setInputStream(null);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 
@@ -373,122 +236,76 @@ public class SubDownload extends Thread {
 	public void setDownload(Download download) {
 		this.download = download;
 	}
-	
-	
-	/**
-	 * @return the infoManager
-	 */
-	public InfosManager getInfoManager() {
-		return infosManager;
+
+
+	@Override
+	public void addObserver(Observer obs) {
+		// TODO Auto-generated method stub
+		this.listObserver.add(obs);
 	}
 
 
-	/**
-	 * @param infoManager the infoManager to set
-	 */
-	public void setInfoManager(InfosManager infosManager) {
-		this.infosManager = infosManager;
-	}
-	
-	
-	//obtention de l'état annuler
-	private synchronized boolean checkCancel() {
-		
-		return annuler;
+	@Override
+	public void updateObserver() {
+		// TODO Auto-generated method stub
+		long downloaded = this.getDownloaded();
+		for(Observer obs : this.listObserver)
+			obs.update(false, downloaded);
 	}
 
 
-	//suspension du sous téléchargement
-	public synchronized void suspend2() {
-		continuer = false;
+	@Override
+	public void delObserver() {
+		// TODO Auto-generated method stub
+		this.listObserver = new ArrayList<Observer>();
+	}
+
+
+	public long getDownloaded() {
+		return downloaded;
+	}
+
+
+	public void setDownloaded(long downloaded) {
+		this.downloaded += downloaded;
+	}
+
+
+	public boolean isShutdown() {
+		return shutdown;
+	}
+
+
+	public void setShutdown(boolean shutdown) {
+		this.shutdown = shutdown;
+	}
+
+
+	public synchronized boolean isSuspended() {
+		return suspend;
+	}
+
+
+	public synchronized void pause() {
+		this.suspend = true;
 	}
 	
 	
-	//reprise du sous téléchargement précédemment suspendu
-	public synchronized void resume2() {
-		continuer = true;
+	public synchronized void revive() {
+		suspend = false;
+		notify();
+	}
+
+
+	public synchronized boolean isCancel() {
+		return cancel;
+	}
+
+
+	public synchronized void cancel() {
+		this.cancel = true;
 		notify();
 	}
 	
 	
-	//annulation du sous téléchargement
-	public synchronized void stop2() {
-		annuler = true;
-		this.outputStream = null;
-		notify();
-	}
-
-
-
-	/**
-	 * tentative de création de l'inputstream
-	 */
-	private int tryToCreateInputStream() {
-		
-		HttpURLConnection connexion = null;
-		
-		try {
-			connexion = (HttpURLConnection) url.openConnection();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			return -1;
-		}
-		if(size > 0)
-			connexion.setRequestProperty("Range", "bytes=" + first + "-" + (first + size - 1));
-		else
-			connexion.setRequestProperty("Range", "bytes=" + first + "-");
-		int response;
-		try {
-			response = connexion.getResponseCode();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
-			return -2;
-		}
-		if(response == HttpURLConnection.HTTP_PARTIAL) {
-			InputStream in;
-			try {
-				in = connexion.getInputStream();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				//e1.printStackTrace();
-				return -3;
-			}
-			this.inputStream = in;
-		}
-		return response;
-	}
-	
-	
-	/**
-	 * remplacement de l'inputstream
-	 */
-	private void createInputStream() {
-		int request;
-		do {
-			request = tryToCreateInputStream();
-		}while(request != HttpURLConnection.HTTP_PARTIAL);
-	}
-
-
-
-	/**
-	 * @param file the file from outputStream is generated
-	 */
-	private void createOutputStream(File file) {
-		boolean response;
-		do {
-			try {
-				synchronized (this) {
-					outputStream = new FileOutputStream(file, true);
-				}
-				response = true;
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				//e1.printStackTrace();
-				response = false;
-			}
-		}while(!response);
-	}
 }
