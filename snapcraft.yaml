@@ -45,7 +45,7 @@ apps:
 parts:
   downloadaccelerator:
     plugin: nil
-    source: .
+    source: https://github.com/messey-bilal/downloadaccelerator
     source-tag: release-$SNAPCRAFT_PROJECT_VERSION
     override-build: |
       gradle build
