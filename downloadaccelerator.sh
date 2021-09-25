@@ -1,10 +1,11 @@
 #!/bin/bash
 
-export JAVA_HOME=$SNAP/usr/lib/jvm/java-11-openjdk-amd64
+export JAVA_HOME=$SNAP/usr/lib/jvm/java-11-openjdk-$SNAP_ARCH
 export PATH=/snap/bin:$JAVA_HOME/bin:$PATH
 
 DACAUTOSTART=$SNAP_USER_DATA/.config/autostart
-DACAUTOSTARTDESKTOP=downloadaccelerator-server.desktop
+DACAUTOSTARTDESKTOP=$SNAP_NAME-server.desktop
+DACJARPATHNAME=$SNAP/$SNAP_NAME-$SNAP_VERSION.jar
 
 
 cd $SNAP
@@ -17,13 +18,13 @@ fi
 if [ ! -e $DACAUTOSTART/$DACAUTOSTARTDESKTOP ]
 then
 	cp $DACAUTOSTARTDESKTOP $DACAUTOSTART
-	setsid java -jar $SNAP/downloadaccelerator-2.0.jar server &
+	setsid java -jar $DACJARPATHNAME server &
 fi
 
 ###execution of the command
 if [ -z $1 ]
 then
-	java -jar $SNAP/downloadaccelerator-2.0.jar client
+	java -jar $DACJARPATHNAME client
 else
-	java -jar $SNAP/downloadaccelerator-2.0.jar server
+	java -jar $DACJARPATHNAME server
 fi
