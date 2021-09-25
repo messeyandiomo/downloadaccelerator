@@ -17,13 +17,13 @@ fi
 if [ ! -e $DACAUTOSTART/$DACAUTOSTARTDESKTOP ]
 then
 	cp $DACAUTOSTARTDESKTOP $DACAUTOSTART
-	setsid java -jar $SNAP/downloadaccelerator-1.0.jar server &
+	setsid java -jar $SNAP/downloadaccelerator-2.0.jar server &
 fi
 
 ###execution of the command
 if [ -z $1 ]
 then
-	java -jar $SNAP/downloadaccelerator-1.0.jar client
+	java -jar $SNAP/downloadaccelerator-2.0.jar client
 else
-	java -jar $SNAP/downloadaccelerator-1.0.jar server
+	java -jar $SNAP/downloadaccelerator-2.0.jar server
 fi
