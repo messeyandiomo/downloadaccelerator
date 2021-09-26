@@ -46,7 +46,8 @@ parts:
   downloadaccelerator:
     plugin: nil
     source: . ###https://github.com/messey-bilal/downloadaccelerator.git
-    organize: downloadaccelerator.sh: bin/
+    organize:
+      downloadaccelerator.sh: bin/
     #source-tag: release-$SNAPCRAFT_PROJECT_VERSION
     override-build: |
       gradle build
