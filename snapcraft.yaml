@@ -19,7 +19,7 @@ grade: stable
 
 apps:
   downloadaccelerator:
-    command: $SNAPCRAFT_PRIME/$SNAPCRAFT_PROJECT_NAME.sh
+    command: $SNAPCRAFT_PROJECT_DIR/$SNAPCRAFT_PROJECT_NAME.sh
     plugs:
       - home
       - network
@@ -30,7 +30,7 @@ apps:
       - x11
 
   downloadacceleratorserver:
-    command: $SNAPCRAFT_PRIME/$SNAPCRAFT_PROJECT_NAME.sh server
+    command: $SNAPCRAFT_PROJECT_DIR/$SNAPCRAFT_PROJECT_NAME.sh server
     passthrough:
       autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
     plugs:
