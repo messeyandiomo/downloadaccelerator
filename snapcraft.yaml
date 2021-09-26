@@ -35,7 +35,7 @@ parts:
 
 apps:
   java:
-    command: ${SNAPCRAFT_PART_BUILD}/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
+    command: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
   
   downloadaccelerator:
     command: java -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
