@@ -35,7 +35,7 @@ parts:
 
 apps:
   downloadaccelerator:
-    command: $SNAPCRAFT_PROJECT_NAME.sh
+    command: java $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar
     plugs:
       - home
       - network
