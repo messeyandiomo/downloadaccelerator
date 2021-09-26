@@ -50,7 +50,7 @@ parts:
     organize:
       '*': ./
     prime:
-      - -*
+      - downloadaccelerator.sh
     override-build: |
       gradle build
       cp -r images $SNAPCRAFT_PART_INSTALL/
