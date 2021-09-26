@@ -19,7 +19,7 @@ grade: stable
 
 apps:
   downloadaccelerator:
-    command: $SNAPCRAFT_PROJECT_NAME.sh
+    command: $SNAPCRAFT_PROJECT_NAME
     plugs:
       - home
       - network
