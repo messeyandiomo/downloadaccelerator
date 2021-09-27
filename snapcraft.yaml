@@ -24,6 +24,7 @@ parts:
     #source-tag: release-$SNAPCRAFT_PROJECT_VERSION
     override-build: |
       gradle build
+      mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk
       cp -r images $SNAPCRAFT_PART_INSTALL/
       cp build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
       cp $SNAPCRAFT_PROJECT_NAME.sh $SNAPCRAFT_PART_INSTALL/
@@ -34,11 +35,11 @@ parts:
       - openjdk-11-jre
 
 apps:
-  java:
-    command: java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
-  
   downloadaccelerator:
-    command: java -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
+    command: $JAVA_BIN -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
+    environment:
+      - JAVA_BIN: "$SNAP/usr/lib/jvm/java-11-openjdk/bin/java"
+      - PATH: "$SNAP/bin:$PATH:$SNAP/usr/lib/jvm/java-11-openjdk/jre/bin"
     plugs:
       - home
       - network
