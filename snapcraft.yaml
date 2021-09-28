@@ -13,14 +13,14 @@ description: |
   from desktop activities by clicking to its icon and from web browser firefox 
   if you are installed its extension.
 
-base: core20
+base: core18
 confinement: strict
 grade: stable
 
 apps:
   downloadaccelerator:
     extensions:
-      - gnome-3-38
+      - gnome-3-34
     command: $SNAPCRAFT_PROJECT_NAME.sh client
     plugs:
       - home
