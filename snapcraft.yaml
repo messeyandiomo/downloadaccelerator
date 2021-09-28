@@ -41,7 +41,7 @@ apps:
     environment:
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk/bin/java
       PATH: $SNAP/bin:$PATH:$SNAP/usr/lib/jvm/java-11-openjdk/jre/bin
-    command: $SNAP/usr/lib/jvm/java-11-openjdk/bin/java -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
+    command: /usr/lib/jvm/java-11-openjdk/bin/java -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
     plugs:
       - home
       - network
