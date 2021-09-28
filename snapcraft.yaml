@@ -55,9 +55,6 @@ parts:
     #source-tag: release-$SNAPCRAFT_PROJECT_VERSION
     override-build: |
       gradle build
-        ###wget https://github.com/messey-bilal/$SNAPCRAFT_PROJECT_NAME/snap/local/
-        ###wget https://github.com/messey-bilal/$SNAPCRAFT_PROJECT_NAME/images
-        ###mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk
       cp -r images $SNAPCRAFT_PART_INSTALL/
       cp build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
       cp $SNAPCRAFT_PROJECT_NAME.sh $SNAPCRAFT_PART_INSTALL/
