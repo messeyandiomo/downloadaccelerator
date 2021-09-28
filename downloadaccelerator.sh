@@ -3,18 +3,20 @@
 export JAVA_HOME=$SNAP/usr/lib/jvm/java-11-openjdk-$SNAP_ARCH
 export PATH=/snap/bin:$JAVA_HOME/bin:$PATH
 
-DACAUTOSTART=$SNAP_USER_DATA/.config/autostart
+USER_HOME=/home/$USER
+DACAUTOSTART=$USER_HOME/.config/autostart
 DACAUTOSTARTDESKTOP=$SNAP_NAME-server.desktop
 DACJARPATHNAME=$SNAP/$SNAP_NAME-$SNAP_VERSION.jar
 
-
-cd $SNAP
 
 ###creation of autostart desktop file
 if [ ! -e $DACAUTOSTART ]
 then
 	mkdir -p $DACAUTOSTART
 fi
+
+cd $SNAP
+
 if [ ! -e $DACAUTOSTART/$DACAUTOSTARTDESKTOP ]
 then
 	cp $DACAUTOSTARTDESKTOP $DACAUTOSTART
