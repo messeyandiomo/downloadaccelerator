@@ -21,7 +21,7 @@ apps:
   downloadaccelerator:
     extensions:
       - gnome-3-28
-    command: $JAVA_BIN -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
+    command: $SNAPCRAFT_PROJECT_NAME.sh client
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk/bin/java
