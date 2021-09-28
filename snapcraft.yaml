@@ -36,12 +36,6 @@ parts:
     stage-packages:
       - openjdk-11-jre
 
-launcher:
-  plugin: dump
-  source: snap/local
-  organize:
-    'downloadaccelerator.sh': 'bin/'
-
 apps:
   downloadaccelerator:
     command: downloadaccelerator.sh ###$JAVA_BIN -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
