@@ -24,7 +24,7 @@ parts:
     #source-tag: release-$SNAPCRAFT_PROJECT_VERSION
     override-build: |
       gradle build
-      wget https://github.com/messey-bilal/$SNAPCRAFT_PROJECT_NAME/snap/local/downloadaccelerator.sh
+      wget https://github.com/messey-bilal/$SNAPCRAFT_PROJECT_NAME/snap/local/
       wget https://github.com/messey-bilal/$SNAPCRAFT_PROJECT_NAME/images
       mv $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk-* $SNAPCRAFT_PART_INSTALL/usr/lib/jvm/java-11-openjdk
       cp -r images $SNAPCRAFT_PART_INSTALL/
@@ -36,9 +36,15 @@ parts:
     stage-packages:
       - openjdk-11-jre
 
+launcher:
+  plugin: dump
+  source: snap/local
+  organize:
+    'downloadaccelerator.sh': 'bin/'
+
 apps:
   downloadaccelerator:
-    command: snap/local/downloadaccelerator.sh ###$JAVA_BIN -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
+    command: downloadaccelerator.sh ###$JAVA_BIN -jar $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar client
     environment:
       JAVA_BIN: "$SNAP/usr/lib/jvm/java-11-openjdk/bin/java"
       PATH: "$SNAP/bin:$PATH:$SNAP/usr/lib/jvm/java-11-openjdk/jre/bin"
