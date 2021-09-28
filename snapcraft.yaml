@@ -24,10 +24,13 @@ apps:
     command: $SNAPCRAFT_PROJECT_NAME.sh client
     plugs:
       - home
+      - dbus
+      - gsettings
+      - removable-media
+      - browser-support
       - opengl
       - network
       - network-bind
-      - cups-control
       - desktop
       - desktop-legacy
       - x11
@@ -38,10 +41,13 @@ apps:
       autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
     plugs:
       - home
+      - dbus
+      - gsettings
+      - removable-media
+      - browser-support
       - opengl
       - network
       - network-bind
-      - cups-control
       - desktop 
       - desktop-legacy
       - x11
