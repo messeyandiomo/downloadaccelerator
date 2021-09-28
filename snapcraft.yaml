@@ -24,6 +24,7 @@ apps:
     command: $SNAPCRAFT_PROJECT_NAME.sh client
     plugs:
       - home
+      - opengl
       - network
       - network-bind
       - cups-control
@@ -37,6 +38,7 @@ apps:
       autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
     plugs:
       - home
+      - opengl
       - network
       - network-bind
       - cups-control
