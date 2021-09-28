@@ -20,7 +20,7 @@ grade: stable
 apps:
   downloadaccelerator:
     extensions:
-      - gnome-3-34
+      - gnome-3-38
     command: $SNAPCRAFT_PROJECT_NAME.sh client
     plugs:
       - home
