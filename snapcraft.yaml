@@ -36,7 +36,6 @@ apps:
       - x11
 
   downloadacceleratorserver:
-    command: desktop-launch $SNAP/autostart/setupDesktopServer.sh
     command: desktop-launch $JAVA_BIN -jar $SNAP/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH
@@ -44,6 +43,8 @@ apps:
       PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
       LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
     autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
+    before:
+      - desktop-launch $SNAP/autostart/setupDesktopServer.sh
     plugs:
       - home
       - dbus
