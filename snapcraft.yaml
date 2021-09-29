@@ -24,11 +24,6 @@ apps:
     command: $SNAPCRAFT_PROJECT_NAME.sh client
     plugs:
       - home
-      - dbus
-      - gsettings
-      - removable-media
-      - browser-support
-      - opengl
       - network
       - network-bind
       - desktop
