@@ -14,8 +14,8 @@ description: |
   if you are installed its extension.
 
 base: core18
-confinement: devmode
-grade: devel
+confinement: strict
+grade: stable
 
 apps:
   downloadaccelerator:
