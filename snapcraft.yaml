@@ -36,6 +36,7 @@ apps:
       - x11
 
   downloadacceleratorserver:
+    command: desktop-launch setupDesktopServer.sh
     command: desktop-launch $JAVA_BIN -jar $SNAP/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH
@@ -65,7 +66,9 @@ parts:
       gradle build
       cp -r images $SNAPCRAFT_PART_INSTALL/
       cp build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
-      cp $SNAPCRAFT_PROJECT_NAME-server.desktop $SNAPCRAFT_PART_INSTALL/
+      mkdir $SNAPCRAFT_PART_INSTALL/autostart
+      cp $SNAPCRAFT_PROJECT_NAME-server.desktop $SNAPCRAFT_PART_INSTALL/autostart
+      cp setupDesktopServer.sh $SNAPCRAFT_PART_INSTALL/
     build-packages:
       - gradle
     stage-packages:
