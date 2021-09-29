@@ -68,7 +68,8 @@ parts:
       cp build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
       mkdir $SNAPCRAFT_PART_INSTALL/autostart
       cp $SNAPCRAFT_PROJECT_NAME-server.desktop $SNAPCRAFT_PART_INSTALL/autostart
-      cp setupDesktopServer.sh $SNAPCRAFT_PART_INSTALL/
+      cp setupDesktopServer.sh $SNAPCRAFT_PART_INSTALL/autostart
+      chmod +x $SNAPCRAFT_PART_INSTALL/autostart/setupDesktopServer.sh
     build-packages:
       - gradle
     stage-packages:
