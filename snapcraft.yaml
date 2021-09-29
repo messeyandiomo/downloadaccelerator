@@ -23,8 +23,8 @@ apps:
       - gnome-3-28
     command: desktop-launch $JAVA_BIN -jar $SNAP/$SNAPCRAFT_PROJECT_NAME-$SNAP_PROJECT_VERSION.jar  client
     environment:
-      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAP_ARCH
-      JAVA_BIN: $JAVA_HOME/bin/java
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH
+      JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH/bin/java
       PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
       LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
     plugs:
@@ -38,12 +38,11 @@ apps:
   downloadacceleratorserver:
     command: desktop-launch $JAVA_BIN -jar $SNAP/$SNAPCRAFT_PROJECT_NAME-$SNAP_PROJECT_VERSION.jar server
     environment:
-      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAP_ARCH
-      JAVA_BIN: $JAVA_HOME/bin/java
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH
+      JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH/bin/java
       PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
       LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
-    passthrough:
-      autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
+    autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
     plugs:
       - home
       - dbus
