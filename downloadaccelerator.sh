@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export JAVA_HOME=$SNAP/usr/lib/jvm/java-11-openjdk-$SNAP_ARCH
-export PATH=/snap/bin:$JAVA_HOME/bin:$PATH
+export PATH=$SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
 
 DACAUTOSTART=$SNAP_USER_DATA/.config/autostart
 DACAUTOSTARTDESKTOP=$SNAP_NAME-server.desktop
