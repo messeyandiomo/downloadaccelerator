@@ -36,7 +36,9 @@ apps:
       - x11
 
   downloadacceleratorserver:
-    command: desktop-launch $JAVA_BIN -jar $SNAP/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar server
+    command: |
+      desktop-launch $SNAP/autostart/setupDesktopServer.sh
+      desktop-launch $JAVA_BIN -jar $SNAP/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRFT_TARGET_ARCH/bin/java
