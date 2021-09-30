@@ -12,7 +12,7 @@ fi
 
 cd $SNAP
 
-if [ ! -z $1 ]
+if [ -z $1 ]
 then
   $JAVA_BIN -jar $SNAP/$SNAP_NAME-$SNAP_VERSION.jar  client
 fi
