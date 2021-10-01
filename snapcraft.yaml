@@ -21,7 +21,7 @@ apps:
   downloadaccelerator:
     extensions:
       - gnome-3-28
-    command: desktop-launch $SNAP/usr/bin/setup.sh "$@"
+    command: desktop-launch $SNAP/usr/bin/setup.sh
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
