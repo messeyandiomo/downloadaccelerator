@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=2.0
 Name=Download Accelerator Server
-Exec=downloadaccelerator.downloadacceleratorserver
+Exec=downloadaccelerator.downloadacceleratorserver --autostart
 Terminal=false
 X-GNOME-Autostart-enabled=true
 Icon=${SNAP}/meta/gui/daclogo.png
