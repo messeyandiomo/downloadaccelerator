@@ -1,5 +1,5 @@
 name: downloadaccelerator
-version: '2.0'
+version: '3.0'
 summary: A free tool to download files. 
 description: |
   Download Accelerator is a free and open source software application that
@@ -62,6 +62,7 @@ parts:
     override-build: |
       gradle build
       cp -r images $SNAPCRAFT_PART_INSTALL/
+      cp -r cache $SNAPCRAFT_PART_INSTALL/
       cp build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
       mkdir $SNAPCRAFT_PART_INSTALL/autostart
       cp $SNAPCRAFT_PROJECT_NAME-server.desktop $SNAPCRAFT_PART_INSTALL/autostart
