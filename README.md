@@ -11,3 +11,6 @@ all fonctionalities of this application you must install the two parts.
 You can launch it from command line by typing "downloadaccelerator",
 from desktop activities by clicking to its icon and from web browser firefox 
 if you are installed its extension.
+
+This version adds the possibility to download all youtube type of files
+since its firefox add-ons and it is also faster
