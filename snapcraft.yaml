@@ -72,4 +72,3 @@ parts:
       - gradle
     stage-packages:
       - openjdk-11-jre
-      - ffmpeg
