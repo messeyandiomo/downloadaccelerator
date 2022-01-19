@@ -18,7 +18,7 @@ public class DownloadDirectories {
         	this.setCacheDirectory(this.getDestinationDirectory() + "." + cacheDirectory);
         	this.setTempDirectory("/tmp");
         	String nameRe = "[a-zA-Z_$][a-zA-Z_$0-9]*";
-        	Pattern snapPattern = Pattern.compile(String.format("^\\/home\\/(?:%s)\\/snap\\/(?<snapname>%s)\\/(?<snaprevision>[a-zA-Z_$0-9.]+)(?:\\/)?$", nameRe, nameRe));
+        	Pattern snapPattern = Pattern.compile(String.format("^\\/home\\/(?:%s)\\/snap\\/(?<snapname>%s)\\/(?<snaprevision>[a-zA-Z_$0-9]+)(?:\\/)?$", nameRe, nameRe));
         	Matcher snapMatcher = snapPattern.matcher(this.getDestinationDirectory());
         	if(snapMatcher.find()) {
         		String snapname = snapMatcher.group("snapname");
