@@ -54,8 +54,6 @@ apps:
       - x11
   
   ffmpeg:
-    extensions:
-      - gnome-3-28
     command: $SNAP/usr/bin/ffmpeg
     environment:
       PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
