@@ -7,7 +7,6 @@ public class DownloadDirectories {
 	private String destinationDirectory = "";
 	private String tempDirectory = "";
 	private String cacheDirectory = "cacheofdac";
-	private String ffmpegPathName = "ffmpeg";
 	private static String imagesDirectory = "images" + System.getProperty("file.separator");
 	private static String dacLogo = imagesDirectory + "daclogo.png";
 
@@ -17,14 +16,6 @@ public class DownloadDirectories {
         	this.setDestinationDirectory(System.getenv("HOME"));
         	this.setCacheDirectory(this.getDestinationDirectory() + "." + cacheDirectory);
         	this.setTempDirectory("/tmp");
-        	String nameRe = "[a-zA-Z_$][a-zA-Z_$0-9]*";
-        	Pattern snapPattern = Pattern.compile(String.format("^\\/home\\/(?:%s)\\/snap\\/(?<snapname>%s)\\/(?<snaprevision>[a-zA-Z_$0-9]+)(?:\\/)?$", nameRe, nameRe));
-        	Matcher snapMatcher = snapPattern.matcher(this.getDestinationDirectory());
-        	if(snapMatcher.find()) {
-        		String snapname = snapMatcher.group("snapname");
-        		String snaprevision = snapMatcher.group("snaprevision");
-        		this.setFfmpegPathName("/snap/" + snapname + "/" + snaprevision + "/usr/bin/" + this.getFfmpegPathName());
-        	}
         }
         else if(System.getProperty("os.name").matches("Windows")){
         	this.setDestinationDirectory(System.getenv("%HOMEPATH%"));
