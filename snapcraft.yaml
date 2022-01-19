@@ -57,7 +57,6 @@ apps:
     command: $SNAP/usr/bin/ffmpeg
     environment:
       PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
-      LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
     plugs:
       - home
       - network
