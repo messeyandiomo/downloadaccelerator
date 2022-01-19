@@ -18,7 +18,4 @@ then
 elif [ $1 = "server" ]
 then
   $JAVA_BIN -jar $SNAP/$SNAP_NAME-$SNAP_VERSION.jar  server
-else
-then
-  $FFMPEG_BIN $1
 fi
