@@ -53,18 +53,6 @@ apps:
       - desktop-legacy
       - x11
   
-  ffmpeg:
-    command: $SNAP/usr/bin/ffmpeg
-    environment:
-      PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
-    plugs:
-      - home
-      - network
-      - network-bind
-      - desktop
-      - desktop-legacy
-      - x11
-
 
 
 parts:
