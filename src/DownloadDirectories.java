@@ -73,16 +73,6 @@ public class DownloadDirectories {
 	}
 
 
-	public String getFfmpegPathName() {
-		return ffmpegPathName;
-	}
-
-
-	private void setFfmpegPathName(String ffmpegPathName) {
-		this.ffmpegPathName = ffmpegPathName;
-	}
-
-
 	/*public void setPathLogo(String pathlogo) {
 		dacLogo = pathlogo;
 	}*/
