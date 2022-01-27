@@ -43,9 +43,9 @@ public class DaServer {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		/*if(args[0].equalsIgnoreCase("client"))
-			new DownloadAccelerator("");*/
-		//else if(args[0].equalsIgnoreCase("server"))
+		if(args[0].equalsIgnoreCase("client"))
+			new DownloadAccelerator("");
+		else if(args[0].equalsIgnoreCase("server"))
 			DaServer.getInstance();
 	}
 	
