@@ -587,7 +587,7 @@ public class Setting extends JFrame{
 						String audiopathfilename = downloadDirectories.getDestinationDirectory() + audioFileProperties.getFilename();
 						String videopathfilename = downloadDirectories.getDestinationDirectory() + fileProperties.getFilename();
 						String outputpathfilename = downloadDirectories.getDestinationDirectory() + fileProperties.getFilename() + ".merging." + fileProperties.getSubType();
-						String[] cmd = {downloadDirectories.getFfmpeg(), "-i", audiopathfilename, "-i", videopathfilename, "-acodec", "copy", "-vcodec", "copy", outputpathfilename};
+						String cmd = (downloadDirectories.getFfmpeg().equals("ffmpeg")) ? (downloadDirectories.getFfmpeg() + " -i " + audiopathfilename + " -i " + videopathfilename + " -acodec " + " copy " + " -vcodec " + " copy " + outputpathfilename) : (downloadDirectories.getFfmpeg() + " " + audiopathfilename + " " + videopathfilename + " " + outputpathfilename);
 						ProcessBuilder pb = new ProcessBuilder(cmd);
 						try {
 							Process commandProcess = pb.start();
