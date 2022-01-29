@@ -82,7 +82,6 @@ parts:
       cp $SNAPCRAFT_PROJECT_NAME-server.desktop $SNAPCRAFT_PART_INSTALL/autostart
       cp setup.sh $SNAPCRAFT_PART_INSTALL/usr/bin
       chmod +x $SNAPCRAFT_PART_INSTALL/usr/bin/setup.sh
-      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SNAP_LIBRARY_PATH:$SNAPCRAFT_PART_INSTALL/lib:$SNAPCRAFT_PART_INSTALL/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAPCRAFT_PART_INSTALL/usr/lib:$SNAPCRAFT_PART_INSTALL/usr/lib/$SNAPCRAFT_ARCH_TRIPLET
     build-packages:
       - gradle
     stage-packages:
