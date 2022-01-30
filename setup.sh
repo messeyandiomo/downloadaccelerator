@@ -7,8 +7,6 @@ then
     mkdir -p $SNAP_USER_DATA/.config/autostart
   fi
   ln -sfnt $SNAP_USER_DATA/.config/autostart/ $SNAP/autostart/$SNAP_NAME-server.desktop
-  export PATH=$PATH
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
   $JAVA_BIN -jar $SNAP/$SNAP_NAME-$SNAP_VERSION.jar  server &
 fi
 
