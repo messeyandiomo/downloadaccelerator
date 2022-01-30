@@ -18,12 +18,13 @@ public class DownloadDirectories {
         	this.setDestinationDirectory(System.getenv("HOME"));
         	this.setCacheDirectory(this.getDestinationDirectory() + "." + cacheDirectory);
         	this.setTempDirectory("/tmp");
-        	
+        	/*
         	String nameRe = "[a-zA-Z_$][a-zA-Z_$0-9]*";
         	Pattern snapPattern = Pattern.compile(String.format("^\\/home\\/(?:%s)\\/snap\\/(?<snapname>%s)\\/(?<snaprevision>[a-zA-Z_$0-9.]+)(?:\\/)?$", nameRe, nameRe));
         	Matcher snapMatcher = snapPattern.matcher(this.getDestinationDirectory());
         	if(snapMatcher.find())
         		this.insideSnap = true;
+		*/
         }
         else if(System.getProperty("os.name").matches("Windows")){
         	this.setDestinationDirectory(System.getenv("%HOMEPATH%"));
