@@ -8,7 +8,7 @@ public class DownloadDirectories {
 	private String tempDirectory = "";
 	private String cacheDirectory = "cacheofdac";
 	private String ffmpeg = "ffmpeg";
-	private boolean insideSnap = false;
+	//private boolean insideSnap = false;
 	private static String imagesDirectory = "images" + System.getProperty("file.separator");
 	private static String dacLogo = imagesDirectory + "daclogo.png";
 
@@ -81,10 +81,11 @@ public class DownloadDirectories {
 		this.cacheDirectory = cachedir + System.getProperty("file.separator");
 	}
 	
-	
+	/*
 	public boolean isinsideSnap() {
 		return this.insideSnap;
 	}
+	*/
 
 
 	public String getFfmpeg() {
