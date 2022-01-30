@@ -91,3 +91,8 @@ parts:
       - libavfilter6
       - libavresample3
       - libpostproc54
+      - libavformat57
+      - libavcodec57
+      - libswresample2
+      - libswscale4
+      - libavutil55
