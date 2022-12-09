@@ -1,6 +1,4 @@
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DownloadDirectories {
 	
@@ -8,7 +6,6 @@ public class DownloadDirectories {
 	private String tempDirectory = "";
 	private String cacheDirectory = "cacheofdac";
 	private String ffmpeg = "ffmpeg";
-	//private boolean insideSnap = false;
 	private static String imagesDirectory = "images" + System.getProperty("file.separator");
 	private static String dacLogo = imagesDirectory + "daclogo.png";
 
@@ -17,14 +14,7 @@ public class DownloadDirectories {
 		if(System.getProperty("os.name").matches("Linux")) {
         	this.setDestinationDirectory(System.getenv("HOME"));
         	this.setCacheDirectory(this.getDestinationDirectory() + "." + cacheDirectory);
-        	this.setTempDirectory("/tmp");
-        	/*
-        	String nameRe = "[a-zA-Z_$][a-zA-Z_$0-9]*";
-        	Pattern snapPattern = Pattern.compile(String.format("^\\/home\\/(?:%s)\\/snap\\/(?<snapname>%s)\\/(?<snaprevision>[a-zA-Z_$0-9.]+)(?:\\/)?$", nameRe, nameRe));
-        	Matcher snapMatcher = snapPattern.matcher(this.getDestinationDirectory());
-        	if(snapMatcher.find())
-        		this.insideSnap = true;
-		*/
+        	this.setTempDirectory(this.getCacheDirectory() + "tmp");
         }
         else if(System.getProperty("os.name").matches("Windows")){
         	this.setDestinationDirectory(System.getenv("%HOMEPATH%"));
@@ -32,12 +22,20 @@ public class DownloadDirectories {
         	this.setTempDirectory(System.getenv("%TEMP%"));
         }
 		this.createCacheDirectory();
+		this.createDirectory(this.getTempDirectory());
 	}
 	
 	
 	private synchronized void createCacheDirectory() {
 		
 		File theDir = new File(this.getCacheDirectory());
+		if (!theDir.exists())
+		    theDir.mkdirs();
+	}
+	
+	private void createDirectory(String filepath) {
+		
+		File theDir = new File(filepath);
 		if (!theDir.exists())
 		    theDir.mkdirs();
 	}
@@ -80,27 +78,11 @@ public class DownloadDirectories {
 	private void setCacheDirectory(String cachedir) {
 		this.cacheDirectory = cachedir + System.getProperty("file.separator");
 	}
-	
-	/*
-	public boolean isinsideSnap() {
-		return this.insideSnap;
-	}
-	*/
 
 
 	public String getFfmpeg() {
 		return ffmpeg;
 	}
 	
-	/*
-	private void setFfmpeg(String ffmpeg) {
-		this.ffmpeg = ffmpeg;
-	}
-	*/
-
-
-	/*public void setPathLogo(String pathlogo) {
-		dacLogo = pathlogo;
-	}*/
 
 }

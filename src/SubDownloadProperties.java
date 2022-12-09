@@ -77,7 +77,8 @@ public class SubDownloadProperties {
 				connexion.setRequestProperty("CONSENT", "YES+cb.20210328-17-p0.en+FX+" + consentid);
 			}
 		}
-		connexion.setReadTimeout(120000);
+		connexion.setConnectTimeout(10000);
+		connexion.setReadTimeout(10000);
 		int response = 0;
 		try {
 			response = connexion.getResponseCode();
@@ -115,8 +116,11 @@ public class SubDownloadProperties {
 	}
 	
 	
-	public void createOutputStream() {
-		boolean response;
+	public boolean createOutputStream() {
+		
+		boolean response = false;
+		int attempt = 3;
+		
 		do {
 			try {
 				setOutputStream(new FileOutputStream(file, true));
@@ -124,10 +128,13 @@ public class SubDownloadProperties {
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				//e1.printStackTrace();
-				response = false;
+				attempt--;
 			}
-		}while(!response);
+		}while(!response && attempt != 0);
+		
+		return response;
 	}
+	
 
 	public long getFirstOctet() {
 		return firstOctet;

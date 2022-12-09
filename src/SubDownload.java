@@ -19,12 +19,13 @@ public class SubDownload extends Thread implements Observable {
 	private boolean cancel = false;
 	private boolean shutdown = false;
 	private SubDownloadProperties subDownloadProperties;
-	private int attempt = 3;
 	private boolean complete = false;
+	private SubDownload myself = null;
 	
 	
 	public SubDownload(Download download, int subdownloadnumber, boolean shutdown) {
 		super();
+		this.myself = this;
 		this.setDownload(download);
 		this.setSubdownloadnumber(subdownloadnumber);
 		this.setShutdown(shutdown);
@@ -33,11 +34,22 @@ public class SubDownload extends Thread implements Observable {
 		this.setSize(subDownloadProperties.getSize());
 		this.setFirst(subDownloadProperties.getFirstOctet());
 		this.setDownloaded(subDownloadProperties.getDownloaded());
+		this.download.addObserver(new Observer() {
+			
+			@Override
+			public void update(boolean complete, long infos) {
+				// TODO Auto-generated method stub
+				if(!complete) {
+					myself.interrupt();
+				}
+			}
+		});
 		this.start();
 	}
 	
 	
 	public void run() {
+		
 		if(downloaded > 0) {
 			if(shutdown) {
 				this.updateObserver();
@@ -50,6 +62,7 @@ public class SubDownload extends Thread implements Observable {
 		}
 		else
 			downloadFile();
+		
 		if(complete)
 			this.download.notifyComplete(subdownloadnumber, file);
 		else
@@ -58,47 +71,16 @@ public class SubDownload extends Thread implements Observable {
 	}
 	
 	
+	
+	
 	void downloadFile() {
-		
-		while((attempt != 0) && (!complete)) {
-			tryToDownloadFile();
-			if(complete)
-				break;
-			attempt--;
-		}
-		
-	}
-	
-	
-	void tryToDownloadFile() {
 		
 		boolean isCancel = false;
 		boolean isSuspend = false;
-		if(subDownloadProperties.getOutputStream() == null)
-			subDownloadProperties.createOutputStream();
-		this.outputStream = subDownloadProperties.getOutputStream();
-		while(subDownloadProperties.getInputStream() == null) {
-			subDownloadProperties.createInputStream();
-			isSuspend = this.isSuspended();
-			if(isSuspend) {
-				this.updateObserver();
-				try {
-					synchronized (this) {
-						wait();
-					}
-					this.updateObserver();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			isCancel = this.isCancel();
-			if(isCancel)
-				break;
-		}
 		
-		if(!isCancel) {
+		if((subDownloadProperties.createOutputStream()) && (subDownloadProperties.createInputStream())) {
 			this.inputStream = subDownloadProperties.getInputStream();
+			this.outputStream = subDownloadProperties.getOutputStream();
 			byte[] buf = new byte[1024];
 			int b = 0;
 			long remainByteCount = size - downloaded;
@@ -106,6 +88,7 @@ public class SubDownload extends Thread implements Observable {
 			while(remainByteCount > 0) {
 				try {
 					b = inputStream.read(buf);
+					download.resetWaiting();
 					if(b > 0) {
 						if(remainByteCount < b) {
 							outputStream.write(buf, 0, (int) remainByteCount);
@@ -125,9 +108,10 @@ public class SubDownload extends Thread implements Observable {
 							remainByteCount -= b;
 						}
 					}
-					else
+					else {
 						break;
-				}catch (IOException e) {
+					}
+				} catch (Exception e) {
 					// TODO: handle exception
 					//e.printStackTrace();
 					this.subDownloadProperties.setInputStream(null);
@@ -147,12 +131,14 @@ public class SubDownload extends Thread implements Observable {
 					}
 				}
 				isCancel = this.isCancel();
-				if(isCancel)
+				if(isCancel) {
 					break;
+				}
 			}
 			if(remainByteCount == 0)
 				complete = true;
 		}
+		
 		if(outputStream != null) {
 			try {
 				outputStream.close();
@@ -305,6 +291,22 @@ public class SubDownload extends Thread implements Observable {
 	public synchronized void cancel() {
 		this.cancel = true;
 		notify();
+	}
+	
+	
+	@Override
+	public void interrupt() {
+		if(inputStream != null) {
+			try {
+				inputStream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+			finally {
+				super.interrupt();
+			}
+		}
 	}
 	
 	
