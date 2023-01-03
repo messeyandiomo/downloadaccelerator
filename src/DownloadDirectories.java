@@ -4,7 +4,7 @@ public class DownloadDirectories {
 	
 	private String destinationDirectory = "";
 	private String tempDirectory = "";
-	private String cacheDirectory = "cacheofdac";
+	private String cacheDirectory = "downloadaccelerator";
 	private String ffmpeg = "ffmpeg";
 	private static String imagesDirectory = "images" + System.getProperty("file.separator");
 	private static String dacLogo = imagesDirectory + "daclogo.png";

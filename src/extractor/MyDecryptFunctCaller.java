@@ -43,6 +43,8 @@ class MyDecryptFunctCaller implements MyInterface {
 		PairMyType result = null;
 		Hashtable<String, MyType> localVars = new Hashtable<String, MyType>(argnames.length);
 		
+		System.out.println("length of argnames is : " + argnames.length);
+		
 		for (int i = 0; i < argnames.length; i++)
 			localVars.put(argnames[i], args[i]);
 		

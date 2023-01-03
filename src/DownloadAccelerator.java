@@ -18,15 +18,15 @@ private String message = "";
 			String args[] = this.message.split(";;");
 			if(args.length == 1)
 	    		new Setting(args[0]);
-			else if(args.length == 4)
+			else if(args.length == 4)//This is for media that is not ciphered and  contains both audio and video
 	    		new Setting(args[0], args[1], Long.parseLong(args[2]), args[3]);
 			else if(args.length == 7) {
-				if(isNumeric(args[5]))
+				if(isNumeric(args[5]))//This is or media which is not ciphered and have audio and video separated
 					new Setting(args[0], args[1], Long.parseLong(args[2]), args[3], args[4], Long.parseLong(args[5]), args[6]);
-				else
+				else//This is for media which is ciphered and contains both audio and video
 					new Setting(args[0], args[1], Long.parseLong(args[2]), args[3], args[4], args[5], args[6]);
 			}
-			else if(args.length == 10)
+			else if(args.length == 10)//This is for media which is ciphered and has audio and video separated; the last argument is web page code
 				new Setting(args[0], args[1], Long.parseLong(args[2]), args[3], args[4], args[5], Long.parseLong(args[6]), args[7], args[8], args[9]);
 			
 		}

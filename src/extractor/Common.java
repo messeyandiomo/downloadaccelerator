@@ -26,7 +26,7 @@ public class Common {
 		String[] splitStr = str.split("");
 		
 		for (int i = 0; i < str.length(); i++) {
-			if(splitStr[i].matches("[a-zA-Z0-9_]"))
+			if(Pattern.matches("\\w", splitStr[i]))
 				escapeStr = escapeStr + splitStr[i];
 			else
 				escapeStr = escapeStr + Pattern.quote(splitStr[i]);

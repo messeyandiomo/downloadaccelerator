@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SubDownload extends Thread implements Observable {
 	
@@ -21,6 +23,7 @@ public class SubDownload extends Thread implements Observable {
 	private SubDownloadProperties subDownloadProperties;
 	private boolean complete = false;
 	private SubDownload myself = null;
+	private Timer subDownloadTimer = null;
 	
 	
 	public SubDownload(Download download, int subdownloadnumber, boolean shutdown) {
@@ -34,16 +37,6 @@ public class SubDownload extends Thread implements Observable {
 		this.setSize(subDownloadProperties.getSize());
 		this.setFirst(subDownloadProperties.getFirstOctet());
 		this.setDownloaded(subDownloadProperties.getDownloaded());
-		this.download.addObserver(new Observer() {
-			
-			@Override
-			public void update(boolean complete, long infos) {
-				// TODO Auto-generated method stub
-				if(!complete) {
-					myself.interrupt();
-				}
-			}
-		});
 		this.start();
 	}
 	
@@ -86,9 +79,21 @@ public class SubDownload extends Thread implements Observable {
 			long remainByteCount = size - downloaded;
 			
 			while(remainByteCount > 0) {
+				subDownloadTimer = new Timer();
+				subDownloadTimer.schedule(new TimerTask() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						download.notifyNotComplete();
+						if(myself.isAlive())
+							myself.interrupt();
+					}
+				}, 10000);
 				try {
 					b = inputStream.read(buf);
-					download.resetWaiting();
+					subDownloadTimer.cancel();
+					subDownloadTimer.purge();
 					if(b > 0) {
 						if(remainByteCount < b) {
 							outputStream.write(buf, 0, (int) remainByteCount);
@@ -114,6 +119,8 @@ public class SubDownload extends Thread implements Observable {
 				} catch (Exception e) {
 					// TODO: handle exception
 					//e.printStackTrace();
+					subDownloadTimer.cancel();
+					subDownloadTimer.purge();
 					this.subDownloadProperties.setInputStream(null);
 					break;
 				}
@@ -296,17 +303,7 @@ public class SubDownload extends Thread implements Observable {
 	
 	@Override
 	public void interrupt() {
-		if(inputStream != null) {
-			try {
-				inputStream.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			}
-			finally {
-				super.interrupt();
-			}
-		}
+		super.interrupt();
 	}
 	
 	

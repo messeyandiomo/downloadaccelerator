@@ -24,7 +24,6 @@ public class Download extends Thread implements Observable {
 	private int numberOfSubDownloadsNotCompleted;
 	private int numberOfSubDownloads;
 	private boolean complete = false;
-	private boolean timeout = true;
 	
 	
 	
@@ -47,12 +46,10 @@ public class Download extends Thread implements Observable {
 	
 	public void run() {
 		boolean iscompleted = false;
-		boolean istimeout = true;
 		while(true) {
-			istimeout = true;
 			try {
 				synchronized (this) {
-					wait(60000);
+					wait();
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -62,15 +59,9 @@ public class Download extends Thread implements Observable {
 			if(iscompleted)
 				break;
 			else {
-				istimeout = isTimeout();
-				if(istimeout) {// this branch is also used when there are wake up due to notification for not complete download
-					this.staticsticsManager.pause();
-					while(!staticsticsManager.isSuspended()) yield();
-					this.updateObserver();
-				}
-				else {
-					this.resetTimeout();
-				}
+				this.staticsticsManager.pause();
+				while(!staticsticsManager.isSuspended()) yield();
+				this.updateObserver();
 			}
 		}
 		int numberofcomplete = this.getNumberOfSubDownloadsCompleted();
@@ -200,19 +191,6 @@ public class Download extends Thread implements Observable {
 	
 	private synchronized boolean isCompleted() {
 		return complete;
-	}
-	
-	private synchronized boolean isTimeout() {
-		return timeout;
-	}
-	
-	private synchronized void resetTimeout() {
-		timeout = true;
-	}
-	
-	public synchronized void resetWaiting() {
-		timeout = false;
-		notify();
 	}
 	
 

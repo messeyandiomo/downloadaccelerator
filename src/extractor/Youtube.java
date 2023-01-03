@@ -53,7 +53,7 @@ public class Youtube {
 			/** real extraction */
 			String[] argnames = null;
 			String functionCode = null;
-			String funcName = this.getSignFuncName();
+			String funcName = Common.escape(this.getSignFuncName());
 			Pattern signatureFunctionRe = Pattern.compile(String.format("(?:function\\s+%s|[{;,]\\s*%s\\s*=\\s*function|var\\s+%s\\s*=\\s*function)\\s*\\((?<args>[^)]*)\\)\\s*\\{(?<code>[^}]+)\\}", funcName, funcName, funcName));
 			Matcher matcher = signatureFunctionRe.matcher(this.getPlayerCode());
 			if(matcher.find()) {
