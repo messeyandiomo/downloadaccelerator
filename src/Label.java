@@ -140,6 +140,12 @@ public class Label extends JPanel {
 		this.labelTitle.setText(title + ": ");
 		this.labelTitle.setFont(fontSize);
 	}
+	
+	/** modify font from outside. To not confuse with method setFont of JComponent **/
+	public void changeFont(Font newFont) {
+		this.labelValue.setFont(newFont);
+		this.labelTitle.setFont(newFont);
+	}
 
 	
 	
