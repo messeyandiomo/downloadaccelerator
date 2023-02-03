@@ -1,4 +1,4 @@
-package extractor;
+package decryption;
 
 import java.util.Hashtable;
 import java.util.regex.Matcher;

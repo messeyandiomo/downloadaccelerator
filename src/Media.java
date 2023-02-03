@@ -11,16 +11,21 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 @SuppressWarnings("serial")
 public class Media extends JInternalFrame {
 	
-	private Label title;
-	private Label type;
-	private Label duration;
-	private Label resolution;
-	private Label size;
+	private Label titleLabel;
+	private Label typeLabel;
+	private Label durationLabel;
+	private Label resolutionLabel;
+	private Label sizeLabel;
+	
+	private JsonNode mediaProperties = null;
 	private Media myself;
 	
 	private JPanel containerOfAttributes = new JPanel();//This contains vertically title on top, type, duration, resolution and size on bottom 
@@ -29,7 +34,8 @@ public class Media extends JInternalFrame {
 	
 	private Color initialBackgroundColor;
 	
-	public Media(String title, String type, long duration, int width, int height, long size, String mediaphoto) {
+	
+	public Media(JsonNode mediaproperties) {
 		
 		Rectangle graphicEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		Dimension dimMedia = new Dimension(graphicEnvironment.width/3, graphicEnvironment.height/6);
@@ -37,40 +43,68 @@ public class Media extends JInternalFrame {
 		Dimension dimAttributes = new Dimension(dimMedia.width -dimLogo.width, dimLogo.height);
 		Dimension dimResolution = new Dimension(dimAttributes.width, dimLogo.height/3);
 		
-		Logo photo = new Logo(mediaphoto, dimLogo);
-		this.title = new Label(title, 100);
-		this.type = new Label(type, 50);
-		this.duration = new Label(convertDuration(duration), 20);
-		this.resolution = new Label(width + "x" + height, 10);
-		this.size = new Label(DownloadControl.convertSize(size), 20);
+		this.setMediaProperties(mediaproperties);
+		Logo photo = new Logo(mediaproperties.get("poster").asText(), dimLogo);
+		this.titleLabel = new Label(mediaproperties.get("title").asText(), 100);
+		this.typeLabel = new Label(mediaproperties.get("mimeType").asText().split(";")[0], 50);
+		if(mediaproperties.get("approxDurationMs") != null) {
+			long duration = Long.parseLong(mediaproperties.get("approxDurationMs").asText());
+			if(duration > 0)
+				this.durationLabel = new Label(convertDuration(duration), 20);
+			else
+				this.durationLabel = new Label("", 20);
+		}
+		else
+			this.durationLabel = new Label("", 20);
+		
+		if((mediaproperties.get("width") != null) && (mediaproperties.get("height") != null)) {
+			int width = mediaproperties.get("width").asInt();
+			int height = mediaproperties.get("height").asInt();
+			if((width > 0) && (height > 0))
+				this.resolutionLabel = new Label(width + "x" + height, 10);
+			else
+				this.resolutionLabel = new Label("", 10);
+		}
+		else
+			this.resolutionLabel = new Label("", 10);
+		
+		if(mediaproperties.get("contentLength") != null) {
+			long size = Long.parseLong(mediaproperties.get("contentLength").asText());
+			if(size > 0)
+				this.sizeLabel = new Label(DownloadControl.convertSize(size), 20);
+			else
+				this.sizeLabel = new Label("", 20);
+		}
+		else
+			this.sizeLabel = new Label("", 20);
 		
 		this.initialBackgroundColor = container.getBackground();
 		
-		this.title.setBackground(Color.WHITE);
-		this.type.setBackground(Color.WHITE);
-		this.duration.setBackground(Color.WHITE);
-		this.resolution.setBackground(Color.WHITE);
-		this.size.setBackground(Color.WHITE);
+		this.titleLabel.setBackground(Color.WHITE);
+		this.typeLabel.setBackground(Color.WHITE);
+		this.durationLabel.setBackground(Color.WHITE);
+		this.resolutionLabel.setBackground(Color.WHITE);
+		this.sizeLabel.setBackground(Color.WHITE);
 		
-		this.title.changeFont(new Font("Serif", Font.BOLD, 12));
-		this.type.changeFont(new Font("Serif", Font.PLAIN, 10));
-		this.duration.changeFont(new Font("Serif", Font.PLAIN, 10));
-		this.resolution.changeFont(new Font("Serif", Font.PLAIN, 10));
-		this.size.changeFont(new Font("Serif", Font.PLAIN, 10));
+		this.titleLabel.changeFont(new Font("Serif", Font.BOLD, 12));
+		this.typeLabel.changeFont(new Font("Serif", Font.PLAIN, 10));
+		this.durationLabel.changeFont(new Font("Serif", Font.PLAIN, 10));
+		this.resolutionLabel.changeFont(new Font("Serif", Font.PLAIN, 10));
+		this.sizeLabel.changeFont(new Font("Serif", Font.PLAIN, 10));
 		
 		containerOfResolution.setLayout(new BoxLayout(containerOfResolution, BoxLayout.LINE_AXIS));
-		containerOfResolution.add(this.type);
+		containerOfResolution.add(this.typeLabel);
 		containerOfResolution.add(Box.createRigidArea(new Dimension(8, 0)));
-		containerOfResolution.add(this.duration);
+		containerOfResolution.add(this.durationLabel);
 		containerOfResolution.add(Box.createRigidArea(new Dimension(8, 0)));
-		containerOfResolution.add(this.resolution);
+		containerOfResolution.add(this.resolutionLabel);
 		containerOfResolution.add(Box.createRigidArea(new Dimension(8, 0)));
-		containerOfResolution.add(this.size);
+		containerOfResolution.add(this.sizeLabel);
 		containerOfResolution.setPreferredSize(dimResolution);
 		containerOfResolution.setBackground(Color.WHITE);
 		
 		containerOfAttributes.setLayout(new BoxLayout(containerOfAttributes, BoxLayout.PAGE_AXIS));
-		containerOfAttributes.add(this.title);
+		containerOfAttributes.add(this.titleLabel);
 		containerOfAttributes.add(containerOfResolution);
 		containerOfAttributes.setPreferredSize(dimAttributes);
 		containerOfAttributes.setBackground(Color.WHITE);
@@ -90,22 +124,59 @@ public class Media extends JInternalFrame {
 	}
 	
 	
+	public JsonNode getMediaProperties() {
+		return mediaProperties;
+	}
+
+
+	public void setMediaProperties(JsonNode mediaProperties) {
+		this.mediaProperties = mediaProperties;
+	}
+
+
 	class MediaMouseListener implements MouseListener {
 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
 			// TODO Auto-generated method stub
 			myself.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			/** get url or decryption of signature cipher **/
+			JsonNode mediaproperties = myself.getMediaProperties();
+			if(mediaproperties.get("url") != null) {
+				if(mediaproperties.get("audioUrl") != null) {
+					if((mediaproperties.get("contentLength") != null) && (mediaproperties.get("audioContentLength") != null))
+						new Setting(mediaproperties.get("title").asText(), mediaproperties.get("mimeType").asText().split(";")[0], Long.parseLong(mediaproperties.get("contentLength").asText()), mediaproperties.get("url").asText(), mediaproperties.get("audioMimeType").asText().split(";")[0], Long.parseLong(mediaproperties.get("audioContentLength").asText()), mediaproperties.get("audioUrl").asText());
+				}
+				else {
+					if(mediaproperties.get("contentLength") != null)
+						new Setting(mediaproperties.get("title").asText(), mediaproperties.get("mimeType").asText().split(";")[0], Long.parseLong(mediaproperties.get("contentLength").asText()), mediaproperties.get("url").asText());
+					else
+						new Setting(mediaproperties.get("url").asText());
+				}
+				
+			}
+			else if(mediaproperties.get("signatureCipher") != null) {
+				if(mediaproperties.get("audioSignatureCipher") != null) {
+					if((mediaproperties.get("contentLength") != null) && (mediaproperties.get("audioContentLength") != null))
+						new Setting(mediaproperties.get("title").asText(), mediaproperties.get("mimeType").asText().split(";")[0], Long.parseLong(mediaproperties.get("contentLength").asText()), mediaproperties.get("signatureCipher").asText(), mediaproperties.get("playerUrl").asText(), mediaproperties.get("audioMimeType").asText().split(";")[0], Long.parseLong(mediaproperties.get("audioContentLength").asText()), mediaproperties.get("audioSignatureCipher").asText(), null, null);
+				}
+				else {
+					if(mediaproperties.get("contentLength") != null)
+						new Setting(mediaproperties.get("title").asText(), mediaproperties.get("mimeType").asText().split(";")[0], Long.parseLong(mediaproperties.get("contentLength").asText()), mediaproperties.get("signatureCipher").asText(), mediaproperties.get("playerUrl").asText(), null, null);
+				}
+			}
+			/** close the container of medias **/
+			((MediaContainer) SwingUtilities.getWindowAncestor(myself)).dispose();
 		}
 
 		@Override
 		public void mouseEntered(MouseEvent arg0) {
 			// TODO Auto-generated method stub
-			title.setBackground(initialBackgroundColor);
-			type.setBackground(initialBackgroundColor);
-			duration.setBackground(initialBackgroundColor);
-			resolution.setBackground(initialBackgroundColor);
-			size.setBackground(initialBackgroundColor);
+			titleLabel.setBackground(initialBackgroundColor);
+			typeLabel.setBackground(initialBackgroundColor);
+			durationLabel.setBackground(initialBackgroundColor);
+			resolutionLabel.setBackground(initialBackgroundColor);
+			sizeLabel.setBackground(initialBackgroundColor);
 			containerOfResolution.setBackground(initialBackgroundColor);
 			containerOfAttributes.setBackground(initialBackgroundColor);
 			container.setBackground(initialBackgroundColor);
@@ -116,11 +187,11 @@ public class Media extends JInternalFrame {
 		@Override
 		public void mouseExited(MouseEvent arg0) {
 			// TODO Auto-generated method stub
-			title.setBackground(Color.WHITE);
-			type.setBackground(Color.WHITE);
-			duration.setBackground(Color.WHITE);
-			resolution.setBackground(Color.WHITE);
-			size.setBackground(Color.WHITE);
+			titleLabel.setBackground(Color.WHITE);
+			typeLabel.setBackground(Color.WHITE);
+			durationLabel.setBackground(Color.WHITE);
+			resolutionLabel.setBackground(Color.WHITE);
+			sizeLabel.setBackground(Color.WHITE);
 			containerOfResolution.setBackground(Color.WHITE);
 			containerOfAttributes.setBackground(Color.WHITE);
 			container.setBackground(Color.WHITE);

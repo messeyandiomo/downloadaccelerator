@@ -12,6 +12,9 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import decryption.Common;
+import decryption.Youtube;
+
 @SuppressWarnings("serial")
 public class MediaContainer extends JFrame {
 	
@@ -20,9 +23,10 @@ public class MediaContainer extends JFrame {
 	private JPanel container = new JPanel();
 	private int height = 0, width = 0, heightScrollPane = 0, numberOfMedia = 0, maxOfMedia = 5;
 	private MediaContainer myself =null;
-	
-	
-	private MediaContainer() {
+
+
+	public MediaContainer() {
+		
 		
 		try {
 			this.setIconImage(ImageIO.read(new File(DownloadDirectories.getPathLogo())));
@@ -33,7 +37,7 @@ public class MediaContainer extends JFrame {
 		
 		Rectangle graphicEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		int positionX = (int) graphicEnvironment.getWidth()/2;
-		int positionY = (int) graphicEnvironment.getHeight()/2;
+		int positionY = 0;
 		
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setLocation(positionX, positionY);
@@ -79,17 +83,22 @@ public class MediaContainer extends JFrame {
 		
 		return myself;
 	}
+	
+	
+	
 
 	/*public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		MediaContainer mediacontainer = new MediaContainer();
-		mediacontainer.addMedia(new Media("DJ Khaled - I'm The One ft. Justin Bieber-Quavo-Chance the Rapper-Lil Wayne", "video/mp4", 120000, 1024, 712, 248000, "/home/bilal/eclipse-workspace/downloadaccelerator/images/videotest.jpg"));
-		mediacontainer.addMedia(new Media("Coolio - Gangsta's Paradise (feat. L.V.) [Official Music Video]", "video/mp4", 120000, 1024, 712, 248000, "/home/bilal/eclipse-workspace/downloadaccelerator/images/videotest.jpg"));
-		mediacontainer.addMedia(new Media("Geo Masso A muto 1981 Cameroun", "video/mp4", 120000, 1024, 712, 248000, "/home/bilal/eclipse-workspace/downloadaccelerator/images/videotest.jpg"));
-		mediacontainer.addMedia(new Media("Mary J. Blige - Be Without You (Official Music Video)", "video/mp4", 120000, 1024, 712, 248000, "/home/bilal/eclipse-workspace/downloadaccelerator/images/videotest.jpg"));
-		mediacontainer.addMedia(new Media("Megan Thee Stallion - Captain Hook [Official Video]", "video/mp4", 120000, 1024, 712, 248000, "/home/bilal/eclipse-workspace/downloadaccelerator/images/videotest.jpg"));
-		mediacontainer.addMedia(new Media("Michael Jackson - You Rock My World (Official Video)", "video/mp4", 120000, 1024, 712, 248000, "/home/bilal/eclipse-workspace/downloadaccelerator/images/videotest.jpg"));
-		mediacontainer.addMedia(new Media("Missy Elliott - All N My Grill [Official Music Video]", "video/mp4", 120000, 1024, 712, 248000, "/home/bilal/eclipse-workspace/downloadaccelerator/images/videotest.jpg"));
+		String webpage = Common.getWebPage("https://www.youtube.com/watch?v=d56mG7DezGs");
+		Youtube.getPlayerUrl(webpage);
+		mediacontainer.addMedia(new Media("Coolio - Gangsta's Paradise (feat. L.V.) [Official Music Video]", "video/mp4", 120000, 1024, 712, 248000, "images/defaultposter.jpg"));
+		mediacontainer.addMedia(new Media("Geo Masso A muto 1981 Cameroun", "video/mp4", 120000, 1024, 712, 248000, "images/defaultposter.jpg"));
+		mediacontainer.addMedia(new Media("Mary J. Blige - Be Without You (Official Music Video)", "video/mp4", 120000, 1024, 712, 248000, "images/defaultposter.jpg"));
+		mediacontainer.addMedia(new Media("Megan Thee Stallion - Captain Hook [Official Video]", "video/mp4", 120000, 1024, 712, 248000, "images/defaultposter.jpg"));
+		mediacontainer.addMedia(new Media("Michael Jackson - You Rock My World (Official Video)", "video/mp4", 120000, 1024, 712, 248000, "images/defaultposter.jpg"));
+		mediacontainer.addMedia(new Media("Missy Elliott - All N My Grill [Official Music Video]", "video/mp4", 120000, 1024, 712, 248000, "images/defaultposter.jpg"));
+		mediacontainer.addMedia(new Media("DJ Khaled - I'm The One ft. Justin Bieber-Quavo-Chance the Rapper-Lil Wayne", "video/mp4", 120000, 1024, 712, 248000, "images/defaultposter.jpg"));
 	}*/
 
 }

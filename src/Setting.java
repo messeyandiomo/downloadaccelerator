@@ -10,14 +10,20 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 
-import extractor.Youtube;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import decryption.Common;
+import decryption.Youtube;
+import extractor.JSON;
 
 
 @SuppressWarnings("serial")
@@ -419,6 +425,8 @@ public class Setting extends JFrame{
 		}
 	}
 	
+	
+	
 	void drawLogo(JLabel labelicon) {
 		
 		try {
@@ -492,22 +500,71 @@ public class Setting extends JFrame{
 				container.add(containerErreur);
 				labelErreur.setText("Ce champs est vide !!!");
 				parameterUrl.requestFocus();
+				SwingUtilities.updateComponentTreeUI(container);
+				window.pack();
+				window.setCursor(Cursor.getDefaultCursor());
 			}
 			else {
-				fileProperties = new FileProperties(parameterUrl.getText());
-				if(!fileProperties.hasError()) {
-					container.remove(containerErreur);
-					prepareSetting(fileProperties, audioFileProperties);
+				String pageurl = parameterUrl.getText();
+				if(Common.getDomainName(pageurl).contains("youtube.com")){
+                    if (pageurl.contains("embed")) {
+                    	String[] urlcomponents = pageurl.split("/");
+                    	pageurl = "https://www.youtube.com/watch?v=" + urlcomponents[urlcomponents.length - 1];
+                    }
+                    if(pageurl.contains("watch")) {
+                    	extractor.Youtube yt = new extractor.Youtube(pageurl, downloadDirectories.getTempDirectory(), DownloadDirectories.getImagesDirectory());
+                    	ArrayList<JsonNode> listOfMedias = yt.getMedias();
+                    	System.out.println("number of medias : " + listOfMedias.size());
+                    	window.dispose();
+                    	MediaContainer mediacontainer = new MediaContainer();
+                    	for (JsonNode jsonNode : listOfMedias) {
+                    		mediacontainer.addMedia(new Media(jsonNode));
+						}
+                    }
+				}
+				else if(pageurl.contains("facebook")) {
+					Pattern facebookUrlPattern = Pattern.compile("(?:https?://(?:[\\w-]+\\.)?(?:facebook\\.com|facebookcorewwwi\\.onion)/(?:[^#]*?\\#!/)?(?:(?:video/video\\.php|photo\\.php|video\\.php|video/embed|story\\.php|watch(?:/live)?/?)\\?(?:.*?)(?:v|video_id|story_fbid)=|[^/]+/videos/(?:[^/]+/)?|[^/]+/posts/|groups/[^/]+/permalink/|watchparty/)|facebook:)(?<id>[0-9]+)");
+					Matcher pageurlMatcher = facebookUrlPattern.matcher(pageurl);
+					if(pageurlMatcher.find()) {
+						String videoId = pageurlMatcher.group("id");
+						String realpageurl = pageurl;
+						if(pageurl.startsWith("facebook"))
+							realpageurl = "https://www.facebook.com/video/video.php?v=" + videoId;
+						String webpage = Common.getWebPage(realpageurl.replaceAll("://m.facebook.com/", "://www.facebook.com/"));
+						Pattern handleserverpattern = Pattern.compile(",\\\"result\\\":(\\{.+\\}),\\\"sequence_number\\\":");
+						Matcher handleservermatcher = handleserverpattern.matcher(webpage);
+						String strjsdata = null;
+						if(handleservermatcher.find())
+							strjsdata = handleservermatcher.group(1);
+						//System.out.println("strjsdata " + strjsdata);
+						if(strjsdata != null) {
+							try {
+								JsonNode serverjsdata = JSON.parse(strjsdata);
+								String title = serverjsdata.get("label").asText();
+								System.out.println("title " + title);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}
 				}
 				else {
-					container.add(containerErreur);
-					labelErreur.setText(fileProperties.getError());
-					parameterUrl.requestFocus();
+					fileProperties = new FileProperties(parameterUrl.getText());
+					if(!fileProperties.hasError()) {
+						container.remove(containerErreur);
+						prepareSetting(fileProperties, audioFileProperties);
+					}
+					else {
+						container.add(containerErreur);
+						labelErreur.setText(fileProperties.getError());
+						parameterUrl.requestFocus();
+					}
+					SwingUtilities.updateComponentTreeUI(container);
+					window.pack();
+					window.setCursor(Cursor.getDefaultCursor());
 				}
 			}
-			SwingUtilities.updateComponentTreeUI(container);
-			window.pack();
-			window.setCursor(Cursor.getDefaultCursor());
 		}
 	}
 	
@@ -629,6 +686,11 @@ public class Setting extends JFrame{
 			window.dispose();
 		}
 	}
+	
+	/*public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new Setting();
+	}*/
 	
 }
 

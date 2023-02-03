@@ -1,4 +1,4 @@
-package extractor;
+package decryption;
 
 import java.util.LinkedHashMap;
 

@@ -1,4 +1,4 @@
-package extractor;
+package decryption;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ public class MyType {
 	
 	private String str = null;
 	private Integer nbr = null;
-	private ArrayList<String> list = null;
+	private ArrayList<MyType> list = null;
 	private String[] array = null;
 	private MyObject object = null;
 	private MyJSONObject json = null;
@@ -24,7 +24,92 @@ public class MyType {
 		this.setFunctCaller(null);
 	}
 	
-	public MyType(ArrayList<String> v) {
+	public MyType(MyType v) {
+		
+		if(v.getNbr() != null) {
+			this.setNbr(v.getNbr());
+			this.setStr(null);
+			this.setDict(null);
+			this.setJson(null);
+			this.setList(null);
+			this.setArray(null);
+			this.setObject(null);
+			this.setFunctCaller(null);
+		}
+		else if(v.getStr() != null) {
+			this.setNbr(null);
+			this.setStr(v.getStr());
+			this.setDict(null);
+			this.setJson(null);
+			this.setList(null);
+			this.setArray(null);
+			this.setObject(null);
+			this.setFunctCaller(null);
+		}
+		else if(v.getDict() != null) {
+			this.setNbr(null);
+			this.setStr(null);
+			this.setDict(v.getDict());
+			this.setJson(null);
+			this.setList(null);
+			this.setArray(null);
+			this.setObject(null);
+			this.setFunctCaller(null);
+		}
+		else if(v.getJson() != null) {
+			this.setNbr(null);
+			this.setStr(null);
+			this.setDict(null);
+			this.setJson(v.getJson());
+			this.setList(null);
+			this.setArray(null);
+			this.setObject(null);
+			this.setFunctCaller(null);
+		}
+		else if(v.getList() != null) {
+			this.setNbr(null);
+			this.setStr(null);
+			this.setDict(null);
+			this.setJson(null);
+			this.setList(v.getList());
+			this.setArray(null);
+			this.setObject(null);
+			this.setFunctCaller(null);
+		}
+		else if(v.getArray() != null) {
+			this.setNbr(null);
+			this.setStr(null);
+			this.setDict(null);
+			this.setJson(null);
+			this.setList(null);
+			this.setArray(v.getArray());
+			this.setObject(null);
+			this.setFunctCaller(null);
+		}
+		else if(v.getObject() != null) {
+			this.setNbr(null);
+			this.setStr(null);
+			this.setDict(null);
+			this.setJson(null);
+			this.setList(null);
+			this.setArray(null);
+			this.setObject(v.getObject());
+			this.setFunctCaller(null);
+		}
+		else if(v.getFunctCaller() != null) {
+			this.setNbr(null);
+			this.setStr(null);
+			this.setDict(null);
+			this.setJson(null);
+			this.setList(null);
+			this.setArray(null);
+			this.setObject(null);
+			this.setFunctCaller(v.getFunctCaller());
+		}
+		
+	}
+	
+	public MyType(ArrayList<MyType> v) {
 		this.setList(v);
 		this.setStr(null);
 		this.setDict(null);
@@ -155,11 +240,11 @@ public class MyType {
 		this.str = str;
 	}
 
-	public ArrayList<String> getList() {
+	public ArrayList<MyType> getList() {
 		return list;
 	}
 
-	public void setList(ArrayList<String> list) {
+	public void setList(ArrayList<MyType> list) {
 		this.list = list;
 	}
 
@@ -269,7 +354,7 @@ public class MyType {
 		else if(this.getList() != null) {
 			if(key.getNbr() != null) {
 				if(value.getStr() != null) {
-					this.getList().set(key.getNbr(), value.getStr());
+					this.getList().set(key.getNbr(), value);
 					toReturn = value;
 				}
 			}
@@ -345,8 +430,21 @@ public class MyType {
 		if(this.getStr() != null) {
 			if(obj.getObject() != null)
 				toReturn = new MyType(String.join(this.getStr(), obj.getObject().keySet()));
-			else if(obj.getList() != null)
-				toReturn = new MyType(String.join(this.getStr(), obj.getList()));
+			else if(obj.getList() != null) {
+				boolean islistofstring = true;
+				ArrayList<String> newlist = new ArrayList<String>();
+				for (int i = 0; i < obj.getList().size(); i++) {
+					if(obj.getList().get(i).getStr() != null) {
+						newlist.add(i, obj.getList().get(i).getStr());
+					}
+					else {
+						islistofstring = false;
+						break;
+					}
+				}
+				if(islistofstring)
+					toReturn = new MyType(String.join(this.getStr(), newlist));
+			}
 			else if(obj.getArray() != null)
 				toReturn = new MyType(String.join(this.getStr(), obj.getArray()));
 		}
@@ -368,7 +466,7 @@ public class MyType {
 			toReturn = this;
 		}
 		else if(this.getList() != null) {
-			ArrayList<String> newList = new ArrayList<>();
+			ArrayList<MyType> newList = new ArrayList<>();
 			for (int i = this.getList().size() - 1; i >= 0; i--)
 				newList.add(this.getList().size() - 1 - i, this.getList().get(i));
 			this.setList(newList);
@@ -413,7 +511,7 @@ public class MyType {
 		}
 		else if((this.getList() != null)  && (field.getNbr() != null)){
 			int j = field.getNbr();
-			ArrayList<String> newList = new ArrayList<>(this.getList().size() - j);
+			ArrayList<MyType> newList = new ArrayList<>(this.getList().size() - j);
 			for (int i = j; i < this.getList().size(); i++)
 				newList.add(i - j, this.getList().get(i));
 			toReturn = new MyType(newList);
@@ -437,17 +535,17 @@ public class MyType {
 		
 		Integer index = mytypeidx.getNbr();
 		Integer howMany = null;
-		String itemToAdd = null;
+		MyType itemToAdd = null;
 		
 		if(destiny.getNbr() != null)
 			howMany = destiny.getNbr();
 		else if(destiny.getStr() != null)
-			itemToAdd = destiny.getStr();
+			itemToAdd = destiny;
 		
 		if(this.getList() != null) {
 			if(howMany != null) {
 				int sizeSplice = Math.min(index + howMany, this.getList().size());
-				ArrayList<String> returnList = new ArrayList<>(sizeSplice);
+				ArrayList<MyType> returnList = new ArrayList<>(sizeSplice);
 				
 				for (int i = index; i < sizeSplice; i++)
 					returnList.add(i - index, this.getList().remove(index.intValue()));
@@ -455,8 +553,8 @@ public class MyType {
 			}
 			else if(itemToAdd != null) {
 				int sizeSplice = this.getList().size() + 1;
-				ArrayList<String> newList = new ArrayList<>(sizeSplice);
-				ArrayList<String> returnList = null;
+				ArrayList<MyType> newList = new ArrayList<>(sizeSplice);
+				ArrayList<MyType> returnList = null;
 				
 				for (int i = 0; i < sizeSplice; i++) {
 					if(i < index)
@@ -502,7 +600,7 @@ public class MyType {
 					if(i < index)
 						newArray[i] = this.getArray()[i];
 					else if(i == index)
-						newArray[index] = itemToAdd;
+						newArray[index] = itemToAdd.getStr();
 					else if(i > index)
 						newArray[i] = this.getArray()[i - 1];
 				}
@@ -520,8 +618,8 @@ public class MyType {
 				this.setStr(newStr);
 				toReturn = new MyType(this.getStr().substring(index.intValue(), sizeSplice));
 			}
-			else if(itemToAdd != null) {
-				String newStr = new String(this.getStr().substring(0, index.intValue()).concat(itemToAdd).concat(this.getStr().substring(index.intValue())));
+			else if(itemToAdd.getStr() != null) {
+				String newStr = new String(this.getStr().substring(0, index.intValue()).concat(itemToAdd.getStr()).concat(this.getStr().substring(index.intValue())));
 				String returnString = null;
 				
 				this.setStr(newStr);

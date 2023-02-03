@@ -1,4 +1,4 @@
-package extractor;
+package decryption;
 
 import java.io.EOFException;
 import java.io.File;
@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
 public class Cache {
 	/**
@@ -230,10 +229,10 @@ public class Cache {
 }
 
 
-
+/*
 class CacheEntry implements Serializable {
 	
-	private static final long serialVersionUID = 3741144144461153143L;
+	
 	private String key = null;
 	private MyDecryptFunctCaller functCaller = null;
 	
@@ -258,3 +257,4 @@ class CacheEntry implements Serializable {
 		this.functCaller = functCaller;
 	}
 }
+*/

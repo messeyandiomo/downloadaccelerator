@@ -6,9 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SubDownloadProperties {
 	
@@ -18,7 +15,6 @@ public class SubDownloadProperties {
 	private File file;
 	private String filetype = null;
 	private URL url;
-	private RequestProperties requestProperties;
 	private InputStream inputStream = null;
 	private OutputStream outputStream = null;
 	
@@ -32,7 +28,7 @@ public class SubDownloadProperties {
 		this.setFile(file);
 		this.setUrl(url);
 		this.setFiletype(filetype);
-		this.setRequestProperties(requestproperties);
+		//this.setRequestProperties(requestproperties);
 		if(this.downloaded != this.size) {
 			this.createInputStream();
 			this.createOutputStream();
@@ -54,8 +50,9 @@ public class SubDownloadProperties {
 			return -1;
 		}
 		connexion.setRequestProperty("Range", "bytes=" + firstOctet + "-" + (firstOctet + size - downloaded - 1));
-		if(requestProperties != null) {
-			connexion.setRequestProperty("User-Agent", requestProperties.getUserAgent());
+		/*if(requestProperties != null) {
+			if(requestProperties.getUserAgent() != null)
+				connexion.setRequestProperty("User-Agent", requestProperties.getUserAgent());
 			String domain = requestProperties.getDomain();
 			String cookies = requestProperties.getCookies();
 			if(domain.contains(".youtube.com")) {
@@ -76,7 +73,7 @@ public class SubDownloadProperties {
 					consentid = (100 + new Random().nextInt(899)) + "";
 				connexion.setRequestProperty("CONSENT", "YES+cb.20210328-17-p0.en+FX+" + consentid);
 			}
-		}
+		}*/
 		connexion.setConnectTimeout(10000);
 		connexion.setReadTimeout(10000);
 		int response = 0;
@@ -221,9 +218,8 @@ public class SubDownloadProperties {
 
 
 
-	private void setRequestProperties(RequestProperties requestProperties) {
-		this.requestProperties = requestProperties;
-	}
+	/*private void setRequestProperties(RequestProperties requestProperties) {
+	}*/
 
 
 
