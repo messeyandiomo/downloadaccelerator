@@ -9,7 +9,6 @@ sourceSets {
 }
 
 repositories {
-   jcenter()
    flatDir {
       dirs 'libs'
    }
