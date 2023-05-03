@@ -60,6 +60,7 @@ parts:
     source: . ###https://github.com/messey-bilal/downloadaccelerator.git
     #source-tag: release-$SNAPCRAFT_PROJECT_VERSION
     override-build: |
+      snapcraftctl build
       cp -r images $SNAPCRAFT_PART_INSTALL/
       cp build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
       mkdir $SNAPCRAFT_PART_INSTALL/autostart
