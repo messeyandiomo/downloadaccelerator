@@ -59,6 +59,8 @@ parts:
     plugin: nil
     source: . ###https://github.com/messey-bilal/downloadaccelerator.git
     #source-tag: release-$SNAPCRAFT_PROJECT_VERSION
+    build-packages:
+      - gradle
     override-build: |
       gradle build
       cp -r images $SNAPCRAFT_PART_INSTALL/
@@ -67,8 +69,6 @@ parts:
       cp $SNAPCRAFT_PROJECT_NAME-server.desktop $SNAPCRAFT_PART_INSTALL/autostart
       cp setup.sh $SNAPCRAFT_PART_INSTALL/usr/bin
       chmod +x $SNAPCRAFT_PART_INSTALL/usr/bin/setup.sh
-    build-packages:
-      - gradle
     stage-packages:
       - openjdk-11-jre
       - ffmpeg
