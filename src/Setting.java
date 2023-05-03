@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import decryption.Common;
 import decryption.Youtube;
-import extractor.JSON;
+import net.gcardone.junidecode.Junidecode;
 
 
 @SuppressWarnings("serial")
@@ -531,22 +531,27 @@ public class Setting extends JFrame{
 						if(pageurl.startsWith("facebook"))
 							realpageurl = "https://www.facebook.com/video/video.php?v=" + videoId;
 						String webpage = Common.getWebPage(realpageurl.replaceAll("://m.facebook.com/", "://www.facebook.com/"));
-						Pattern handleserverpattern = Pattern.compile(",\\\"result\\\":(\\{.+\\}),\\\"sequence_number\\\":");
-						Matcher handleservermatcher = handleserverpattern.matcher(webpage);
-						String strjsdata = null;
-						if(handleservermatcher.find())
-							strjsdata = handleservermatcher.group(1);
-						//System.out.println("strjsdata " + strjsdata);
-						if(strjsdata != null) {
-							try {
-								JsonNode serverjsdata = JSON.parse(strjsdata);
-								String title = serverjsdata.get("label").asText();
-								System.out.println("title " + title);
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+						Pattern resultpattern = Pattern.compile(",\\\"result\\\":(\\{.+?\\}),\\\"sequence_number\\\":");
+						Matcher resultmatcher = resultpattern.matcher(webpage);
+						ArrayList<String> resultArray = new ArrayList<>();
+						
+						while(resultmatcher.find()) {
+							String resultstr = resultmatcher.group(1);
+							resultstr = resultstr.replaceAll("\\\\/", "/");
+							resultstr = resultstr.replaceAll("\\\\\\\"", "\"");
+							resultstr = Junidecode.unidecode(resultstr);
+							resultArray.add(resultstr);
 						}
+						/*String teststr = "J\u2019adore";
+						System.out.println("teststr : " + Junidecode.unidecode(teststr));
+						*/
+						int i = 0;
+						for (String string : resultArray) {
+							System.out.println(i + ": " + string);
+							i++;
+						}
+						System.out.println("number of result: " + resultArray.size());
+						
 					}
 				}
 				else {
@@ -687,10 +692,10 @@ public class Setting extends JFrame{
 		}
 	}
 	
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new Setting();
-	}*/
+	}
 	
 }
 

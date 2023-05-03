@@ -12,6 +12,10 @@ repositories {
    jcenter()
 }
 
+dependencies {
+   compile fileTree(include: ['*.jar'], dir: 'libs')
+}
+
 jar {
     baseName = 'downloadaccelerator'
     version = '3.1'
