@@ -80,5 +80,5 @@ parts:
       - libavcodec57
       - libswresample2
       - libswscale4
-      - libavutil55
+      - libavutil56
       - libslang2
