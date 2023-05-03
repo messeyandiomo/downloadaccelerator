@@ -72,13 +72,13 @@ parts:
     stage-packages:
       - openjdk-11-jre
       - ffmpeg
-      - libavdevice57
-      - libavfilter6
-      - libavresample3
-      - libpostproc54
-      - libavformat57
-      - libavcodec57
-      - libswresample2
-      - libswscale4
+      - libavdevice58
+      - libavfilter7
+      - libavresample4
+      - libpostproc55
+      - libavformat58
+      - libavcodec58
+      - libswresample3
+      - libswscale5
       - libavutil56
       - libslang2
