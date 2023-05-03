@@ -12,14 +12,6 @@ repositories {
    jcenter()
 }
 
-dependencies {
-   compile files('libs/jackson-annotations-2.14.1.jar')
-   compile files('libs/jackson-core-2.14.1.jar')
-   compile files('libs/jackson-databind-2.14.1.jar')
-   compile files('libs/junidecode-0.4.1.jar')
-   compile files('libs/junidecode-0.4.1-javadoc.jar')
-}
-
 jar {
     baseName = 'downloadaccelerator'
     version = '3.1'
