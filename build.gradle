@@ -9,9 +9,18 @@ sourceSets {
 }
 
 repositories {
+   jcenter()
    flatDir {
-      dirs 'libs'
+       dir file("libs")
    }
+}
+
+dependencies {
+   implementation ':jackson-annotations:2.14.1'
+   implementation ':jackson-core:2.14.1'
+   implementation ':jackson-databind:2.14.1'
+   implementation ':junidecode:0.4.1'
+   implementation files('libs/junidecode-0.4.1-javadoc.jar')
 }
 
 jar {
