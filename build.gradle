@@ -16,11 +16,11 @@ repositories {
 }
 
 dependencies {
-   implementation('jackson-annotations:2.14.1')
-   implementation('jackson-core:2.14.1')
-   implementation('jackson-databind:2.14.1')
-   implementation('junidecode:0.4.1')
-   implementation('junidecode:0.4.1-javadoc')
+   implementation files('jackson-annotations-2.14.1.jar')
+   implementation files('jackson-core-2.14.1.jar')
+   implementation files('jackson-databind-2.14.1.jar')
+   implementation files('junidecode-0.4.1.jar')
+   implementation files('junidecode-0.4.1-javadoc.jar')
 }
 
 jar {
