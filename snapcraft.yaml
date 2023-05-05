@@ -82,3 +82,4 @@ parts:
       - libswscale5
       - libavutil56
       - libslang2
+      - freeglut3
