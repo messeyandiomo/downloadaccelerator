@@ -16,14 +16,13 @@ repositories {
 }
 
 dependencies {
-   implementation files('jackson-annotations-2.14.1.jar')
-   implementation files('jackson-core-2.14.1.jar')
-   implementation files('jackson-databind-2.14.1.jar')
-   implementation files('junidecode-0.4.1.jar')
-   implementation files('junidecode-0.4.1-javadoc.jar')
+   implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 jar {
+    into('lib') {
+        from 'libs'
+    }
     baseName = 'downloadaccelerator'
     version = '3.1'
     manifest {
