@@ -26,7 +26,8 @@ apps:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
       PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
-      LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
+      LD_LIBRARY_PATH: /snap/gnome-3-38-2004-sdk/current/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-3-38-2004-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-3-38-2004-sdk/current/usr/lib:/snap/gnome-3-38-2004-sdk/current/usr/lib/vala-current:/snap/gnome-3-38-2004-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      ###LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
     plugs:
       - home
       - network
@@ -43,7 +44,8 @@ apps:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
       PATH: $SNAP/bin:$SNAP/sbin:$SNAP/usr/bin:$SNAP/usr/sbin:$JAVA_HOME/bin:$PATH
-      LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
+      LD_LIBRARY_PATH: /snap/gnome-3-38-2004-sdk/current/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-3-38-2004-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-3-38-2004-sdk/current/usr/lib:/snap/gnome-3-38-2004-sdk/current/usr/lib/vala-current:/snap/gnome-3-38-2004-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      ###LD_LIBRARY_PATH: $SNAP/lib:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
     autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
     plugs:
       - home
