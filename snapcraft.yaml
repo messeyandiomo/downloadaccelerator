@@ -21,7 +21,7 @@ apps:
   downloadaccelerator:
     extensions:
       - gnome-3-38
-    command: desktop-launch $SNAP/usr/bin/setup.sh
+    command: desktop-launch $SNAPCRAFT_PART_INSTALL/usr/bin/setup.sh
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
@@ -38,7 +38,7 @@ apps:
   downloadacceleratorserver:
     extensions:
       - gnome-3-38
-    command: desktop-launch $SNAP/usr/bin/setup.sh server
+    command: desktop-launch $SNAPCRAFT_PART_INSTALL/usr/bin/setup.sh server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
