@@ -12,9 +12,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import decryption.Common;
-import decryption.Youtube;
-
 @SuppressWarnings("serial")
 public class MediaContainer extends JFrame {
 	

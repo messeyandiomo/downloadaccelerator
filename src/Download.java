@@ -60,14 +60,14 @@ public class Download extends Thread implements Observable {
 				break;
 			else {
 				this.staticsticsManager.pause();
-				while(!staticsticsManager.isSuspended()) yield();
+				while(!staticsticsManager.isSuspended()) Thread.yield();
 				this.updateObserver();
 			}
 		}
 		int numberofcomplete = this.getNumberOfSubDownloadsCompleted();
 		if(numberofcomplete == numberOfSubDownloads) {
 			staticsticsManager.complete();
-			while(staticsticsManager.isAlive()) yield();
+			while(staticsticsManager.isAlive()) Thread.yield();
 			downloadedFile = new File(downloadDirectories.getDestinationDirectory() + fileName);
 			try {
 				OutputStream out = new FileOutputStream(downloadedFile);

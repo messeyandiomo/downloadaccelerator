@@ -2,7 +2,11 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -595,6 +599,41 @@ public class Setting extends JFrame{
 		public void keyPressed(KeyEvent arg0) {
 			
 			// TODO Auto-generated method stub
+			if(arg0.getKeyCode() == KeyEvent.VK_CONTROL) {
+				parameterFileName.addKeyListener(new KeyListener() {
+					
+					@Override
+					public void keyTyped(KeyEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void keyReleased(KeyEvent e) {
+						// TODO Auto-generated method stub
+						if(e.getKeyCode() == KeyEvent.VK_V) {
+							try {
+								parameterFileName.setText(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/,\\\\]", "-"));
+							} catch (HeadlessException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (UnsupportedFlavorException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}
+					
+					@Override
+					public void keyPressed(KeyEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+			}
 		}
 
 		@Override
@@ -607,10 +646,10 @@ public class Setting extends JFrame{
 		public void keyTyped(KeyEvent arg0) {
 			// TODO Auto-generated method stub
 			Pattern p = Pattern.compile("[a-zéèàA-Z0-9]");
-			Pattern p2 = Pattern.compile("[a-zéèàA-Z_0-9-]|\\.");
+			Pattern p2 = Pattern.compile("[\\/,\\\\]");
 			boolean filenameIsEmpty = parameterFileName.getText().isEmpty();
 			Character keyChar = arg0.getKeyChar();
-			if((filenameIsEmpty && !(p.matcher(keyChar.toString()).matches())) || (!filenameIsEmpty && !((p2.matcher(keyChar.toString()).matches())))) {
+			if((filenameIsEmpty && !(p.matcher(keyChar.toString()).matches())) || (!filenameIsEmpty && (p2.matcher(keyChar.toString()).matches()))) {
 				arg0.consume();
 			}
 		}
