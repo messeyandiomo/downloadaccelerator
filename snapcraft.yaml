@@ -1,7 +1,7 @@
 name: downloadaccelerator
 version: '3.1'
 summary: A free tool to download files. 
-description:
+description: |
   Download Accelerator is a free and open source software application that
   allows quickly downloading of files on the web.
   
