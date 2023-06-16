@@ -613,7 +613,7 @@ public class Setting extends JFrame{
 						// TODO Auto-generated method stub
 						if(e.getKeyCode() == KeyEvent.VK_V) {
 							try {
-								parameterFileName.setText(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/,\\\\]", "-"));
+								parameterFileName.setText(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
 							} catch (HeadlessException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -646,7 +646,7 @@ public class Setting extends JFrame{
 		public void keyTyped(KeyEvent arg0) {
 			// TODO Auto-generated method stub
 			Pattern p = Pattern.compile("[a-zéèàA-Z0-9]");
-			Pattern p2 = Pattern.compile("[\\/,\\\\]");
+			Pattern p2 = Pattern.compile("[\\/\\\\]");
 			boolean filenameIsEmpty = parameterFileName.getText().isEmpty();
 			Character keyChar = arg0.getKeyChar();
 			if((filenameIsEmpty && !(p.matcher(keyChar.toString()).matches())) || (!filenameIsEmpty && (p2.matcher(keyChar.toString()).matches()))) {
@@ -731,10 +731,10 @@ public class Setting extends JFrame{
 		}
 	}
 	
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new Setting();
-	}*/
+	}
 	
 }
 

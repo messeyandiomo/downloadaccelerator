@@ -4,7 +4,7 @@ import java.net.URL;
 
 public class DownloadProperties {
 	
-	private int subDownloadCount = 10;
+	private int subDownloadCount = 8;
 	private SubDownloadProperties[] subDownloadProperties = null;
 	
 	
