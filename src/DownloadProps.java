@@ -8,7 +8,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 public class DownloadProps {
 	
@@ -20,11 +19,11 @@ public class DownloadProps {
 	private String fileLogo = "";
 	private String error = "";
 	
-	private int subDownloadCount = 8;
+	private int subDownloadCount = 10;
 	private SubDownloadProps[] subDownloadProps = null;
 	
 	
-	public DownloadProps(String urlstring, String temporarydir) {
+	public DownloadProps(String urlstring) {
 		// TODO Auto-generated constructor stub
 		try {
 			this.url = new URL(urlstring);
@@ -77,7 +76,7 @@ public class DownloadProps {
 			if(response == HttpURLConnection.HTTP_OK) {
 				this.subDownloadProps = new SubDownloadProps[subDownloadCount];
 				//create sub download properties
-				this.createSubDownloadProps(temporarydir, new SubDownloadPropsFactoriesManager(this));
+				this.createSubDownloadProps(new SubDownloadPropsFactoriesManager(this));
 			}
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -214,9 +213,9 @@ public class DownloadProps {
 	 * @param 
 	 * @return
 	 */
-	private void createSubDownloadProps(String temporarydir, SubDownloadPropsFactoriesManager subdownloadpropsfactoriesmanager) {
+	private void createSubDownloadProps(SubDownloadPropsFactoriesManager subdownloadpropsfactoriesmanager) {
 		
-		String temporaryfilename = temporarydir + this.getFilename();
+		String temporaryfilename = DownloadDirs.getInstance().getTempDir() + this.getFilename();
 		long restOfSize = this.getSize()%this.getSubDownloadCount();//surplus of bytes
 		long subdownloadsize = (this.getSize() - restOfSize)/this.getSubDownloadCount();//size of sub-download
 		long firstoctet = 0;
@@ -230,29 +229,6 @@ public class DownloadProps {
 				new SubDownloadPropsFactory(subdownloadpropsfactoriesmanager, i, firstoctet, subdownloadsize, this.getType(), temporaryfilename, this.getUrl(), null);
 				firstoctet += subdownloadsize;
 			}
-		}
-		int i = 0;
-		int j = i + 1;
-		ArrayList<Integer> newsubdownloadpropsindex = new ArrayList<>();
-		while(j < this.getSubDownloadCount()) {
-			if((this.getSubDownloadProps(i).getInputStream() != null && this.getSubDownloadProps(j).getInputStream() == null)||(this.getSubDownloadProps(i).getInputStream() == null && this.getSubDownloadProps(j).getInputStream() == null)) {
-				this.getSubDownloadProps(i).setSize(this.getSubDownloadProps(i).getSize() + this.getSubDownloadProps(j).getSize());
-				newsubdownloadpropsindex.add(i);
-			}
-			else if((this.getSubDownloadProps(i).getInputStream() != null && this.getSubDownloadProps(j).getInputStream() != null)||(this.getSubDownloadProps(i).getInputStream() == null && this.getSubDownloadProps(j).getInputStream() != null)) {
-				newsubdownloadpropsindex.add(i);
-				if(j== this.getSubDownloadCount() - 1)
-					newsubdownloadpropsindex.add(j);
-				i = j;
-			}
-			j++;
-		}
-		if(newsubdownloadpropsindex.size() < this.getSubDownloadCount()) {
-			SubDownloadProps[] newsubdownloadpropsarray = new SubDownloadProps[newsubdownloadpropsindex.size()];
-			for (int k = 0; k < newsubdownloadpropsindex.size(); k++) {
-				newsubdownloadpropsarray[k] = this.getSubDownloadProps(newsubdownloadpropsindex.get(k));
-			}
-			this.subDownloadProps = newsubdownloadpropsarray;
 		}
 	}
 }
