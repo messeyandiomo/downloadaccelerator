@@ -27,7 +27,7 @@ public class Download extends Thread implements Observable {
 	private int numberOfSubDownloads;
 	private boolean complete = false;
 	
-	
+	private SubDownload[] subDownloadsArray;
 	
 	/*************
 	 * 
@@ -40,6 +40,11 @@ public class Download extends Thread implements Observable {
 		this.setStaticsticsManager(statisticsmanager);
 		this.numberOfSubDownloads = downloadProps.getSubDownloadCount();
 		filesOfSubDownloads = new File[numberOfSubDownloads];
+		subDownloadsArray = new SubDownload[numberOfSubDownloads];
+		for (int i = 0; i < numberOfSubDownloads; i++) {
+			filesOfSubDownloads[i] = null;
+			subDownloadsArray[i] = null;
+		}
 		this.start();		
 	}
 	
@@ -195,6 +200,19 @@ public class Download extends Thread implements Observable {
 
 	public void setDownloadProps(DownloadProps downloadProps) {
 		this.downloadProps = downloadProps;
+	}
+	
+	/*** record sub download object ***/
+	public void recordSubDownload(int subdownloadnumber, SubDownload subdownload) {
+		this.subDownloadsArray[subdownloadnumber] = subdownload;
+	}
+	
+	/*** get a sub download thread from his number ***/
+	public SubDownload getSubDownload(int subdownloadnumber) {
+		SubDownload result = null;
+		if(subdownloadnumber < this.numberOfSubDownloads)
+			result = this.subDownloadsArray[subdownloadnumber];
+		return result;
 	}
 	
 	

@@ -49,7 +49,7 @@ public class SubDownloadProps {
 			//e.printStackTrace();
 			return -1;
 		}
-		connexion.setRequestProperty("Range", "bytes=" + firstOctet + "-");
+		connexion.setRequestProperty("Range", "bytes=" + firstOctet + "-" + (firstOctet + size - downloaded - 1));
 		connexion.setConnectTimeout(10000);
 		connexion.setReadTimeout(10000);
 		int response = 0;

@@ -26,6 +26,7 @@ public class SubDownload extends Thread implements Observable {
 	private boolean shutdown = false;
 	private SubDownloadProps subDownloadProps;
 	private boolean complete = false;
+	private boolean running = false;
 	private SubDownload myself = null;
 	private Timer subDownloadTimer = null;
 	
@@ -34,19 +35,20 @@ public class SubDownload extends Thread implements Observable {
 		super();
 		this.myself = this;
 		this.setDownload(download);
-		this.setSubdownloadnumber(subdownloadnumber);
 		this.setShutdown(shutdown);
+		this.setSubdownloadnumber(subdownloadnumber);
 		subDownloadProps = this.download.getDownloadProps().getSubDownloadProps(this.subdownloadnumber);
 		this.file = subDownloadProps.getFile();
 		this.setSize(subDownloadProps.getSize());
 		this.setFirst(subDownloadProps.getFirstOctet());
 		this.setDownloaded(subDownloadProps.getDownloaded());
+		this.download.recordSubDownload(subdownloadnumber, myself);
 		this.start();
 	}
 	
 	
 	public void run() {
-		
+		this.setRunning(true);
 		if(downloaded > 0) {
 			if(shutdown) {
 				this.updateObserver();
@@ -65,6 +67,7 @@ public class SubDownload extends Thread implements Observable {
 		else
 			if(!this.isCancel())
 				this.download.notifyNotComplete();
+		this.setRunning(false);
 	}
 	
 	
@@ -108,6 +111,21 @@ public class SubDownload extends Thread implements Observable {
 							this.subDownloadProps.update(remainByteCount);
 							this.download.getStaticsticsManager().update(remainByteCount);
 							this.updateObserver();
+							/*** check out to the next sub download if it is not alive and it hadn't download anything ***/
+							int nextsubdownloadnumber = subdownloadnumber + 1;
+							if((nextsubdownloadnumber < this.download.getDownloadProps().getSubDownloadCount()) && (!this.download.getSubDownload(nextsubdownloadnumber).isAlive()) && (this.download.getSubDownload(nextsubdownloadnumber).getDownloaded() == 0)) {
+								SubDownloadProps nextsubdownloadprops = this.download.getDownloadProps().getSubDownloadProps(nextsubdownloadnumber);
+								nextsubdownloadprops.setInputStream(inputStream);
+								this.inputStream = null;
+								if(nextsubdownloadprops.getOutputStream() == null)
+									nextsubdownloadprops.createOutputStream();
+								nextsubdownloadprops.getOutputStream().write(buf, (int) remainByteCount, (int) (b - remainByteCount));
+								nextsubdownloadprops.getOutputStream().close();
+								nextsubdownloadprops.setOutputStream(null);
+								nextsubdownloadprops.setDownloaded(b - remainByteCount);
+								this.download.getSubDownload(nextsubdownloadnumber).setDownloaded(b -  remainByteCount);
+								this.download.getSubDownload(nextsubdownloadnumber).start();
+							}
 							remainByteCount = 0;
 							break;
 						}
@@ -311,6 +329,16 @@ public class SubDownload extends Thread implements Observable {
 	@Override
 	public void interrupt() {
 		super.interrupt();
+	}
+
+
+	public synchronized boolean isRunning() {
+		return running;
+	}
+
+
+	public synchronized void setRunning(boolean running) {
+		this.running = running;
 	}
 	
 	
