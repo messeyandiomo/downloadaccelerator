@@ -81,7 +81,7 @@ public class SubDownloadPropsFactoriesManager extends Thread implements Observab
 	public void recordSubDownloadProps(int subdownloadpropsnumber, SubDownloadProps subdownloadprops) {
 		if(subdownloadprops.isAudio())
 			this.audioDownloadProps.setSubDownloadProps(subdownloadpropsnumber, subdownloadprops);
-		else if(subdownloadprops.isVideo())
+		else
 			this.downloadProps.setSubDownloadProps(subdownloadpropsnumber, subdownloadprops);
 		this.setSubDownloadPropsGenerated();
 	}
