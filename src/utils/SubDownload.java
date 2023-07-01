@@ -111,21 +111,6 @@ public class SubDownload extends Thread implements Observable {
 							this.subDownloadProps.update(remainByteCount);
 							this.download.getStaticsticsManager().update(remainByteCount);
 							this.updateObserver();
-							/*** check out to the next sub download if it is not alive and it hadn't download anything ***/
-							int nextsubdownloadnumber = subdownloadnumber + 1;
-							if((nextsubdownloadnumber < this.download.getDownloadProps().getSubDownloadCount()) && (!this.download.getSubDownload(nextsubdownloadnumber).isAlive()) && (this.download.getSubDownload(nextsubdownloadnumber).getDownloaded() == 0)) {
-								SubDownloadProps nextsubdownloadprops = this.download.getDownloadProps().getSubDownloadProps(nextsubdownloadnumber);
-								nextsubdownloadprops.setInputStream(inputStream);
-								this.inputStream = null;
-								if(nextsubdownloadprops.getOutputStream() == null)
-									nextsubdownloadprops.createOutputStream();
-								nextsubdownloadprops.getOutputStream().write(buf, (int) remainByteCount, (int) (b - remainByteCount));
-								nextsubdownloadprops.getOutputStream().close();
-								nextsubdownloadprops.setOutputStream(null);
-								nextsubdownloadprops.setDownloaded(b - remainByteCount);
-								this.download.getSubDownload(nextsubdownloadnumber).setDownloaded(b -  remainByteCount);
-								this.download.getSubDownload(nextsubdownloadnumber).start();
-							}
 							remainByteCount = 0;
 							break;
 						}
@@ -276,6 +261,14 @@ public class SubDownload extends Thread implements Observable {
 	public void delObserver() {
 		// TODO Auto-generated method stub
 		this.listObserver = new ArrayList<Observer>();
+	}
+	
+	public ArrayList<Observer> getObserver(){
+		return this.listObserver;
+	}
+	
+	public void setObserver(ArrayList<Observer> listobserver) {
+		this.listObserver = listobserver;
 	}
 
 

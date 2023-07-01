@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-
 import gui.Observable;
 import gui.Observer;
 
@@ -26,7 +25,6 @@ public class Download extends Thread implements Observable {
 	private int numberOfSubDownloadsNotCompleted;
 	private int numberOfSubDownloads;
 	private boolean complete = false;
-	
 	private SubDownload[] subDownloadsArray;
 	
 	/*************
@@ -52,6 +50,7 @@ public class Download extends Thread implements Observable {
 	
 	public void run() {
 		boolean iscompleted = false;
+		int attempt = 10;
 		while(true) {
 			try {
 				synchronized (this) {
@@ -65,9 +64,22 @@ public class Download extends Thread implements Observable {
 			if(iscompleted)
 				break;
 			else {
-				this.staticsticsManager.pause();
-				while(!staticsticsManager.isSuspended()) Thread.yield();
-				this.updateObserver();
+				if(attempt == 0) {
+					this.staticsticsManager.pause();
+					while(!staticsticsManager.isSuspended()) Thread.yield();
+					this.updateObserver();
+				}
+				else {
+					attempt--;
+					for (int i = 0; i < filesOfSubDownloads.length; i++) {
+						if(filesOfSubDownloads[i] == null) {
+							this.numberOfSubDownloadsNotCompleted--;
+							ArrayList<Observer> listofobservers = this.subDownloadsArray[i].getObserver();
+							SubDownload newsubdownload = new SubDownload(this, i, true);
+							newsubdownload.setObserver(listofobservers);
+						}
+					}
+				}
 			}
 		}
 		int numberofcomplete = this.getNumberOfSubDownloadsCompleted();
@@ -177,6 +189,7 @@ public class Download extends Thread implements Observable {
 		if((numberOfSubDownloadsCompleted + numberOfSubDownloadsNotCompleted) == numberOfSubDownloads)
 			notify();
 	}
+	
 	
 	private synchronized boolean isCompleted() {
 		return complete;
