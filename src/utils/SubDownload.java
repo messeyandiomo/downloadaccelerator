@@ -26,7 +26,6 @@ public class SubDownload extends Thread implements Observable {
 	private boolean shutdown = false;
 	private SubDownloadProps subDownloadProps;
 	private boolean complete = false;
-	private boolean running = false;
 	private SubDownload myself = null;
 	private Timer subDownloadTimer = null;
 	
@@ -48,7 +47,6 @@ public class SubDownload extends Thread implements Observable {
 	
 	
 	public void run() {
-		this.setRunning(true);
 		if(downloaded > 0) {
 			if(shutdown) {
 				this.updateObserver();
@@ -67,7 +65,6 @@ public class SubDownload extends Thread implements Observable {
 		else
 			if(!this.isCancel())
 				this.download.notifyNotComplete();
-		this.setRunning(false);
 	}
 	
 	
@@ -323,16 +320,5 @@ public class SubDownload extends Thread implements Observable {
 	public void interrupt() {
 		super.interrupt();
 	}
-
-
-	public synchronized boolean isRunning() {
-		return running;
-	}
-
-
-	public synchronized void setRunning(boolean running) {
-		this.running = running;
-	}
-	
 	
 }
