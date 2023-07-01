@@ -50,7 +50,7 @@ public class Download extends Thread implements Observable {
 	
 	public void run() {
 		boolean iscompleted = false;
-		int attempt = 10;
+		int attempt = this.getDownloadProps().getSubDownloadCount();
 		while(true) {
 			try {
 				synchronized (this) {
