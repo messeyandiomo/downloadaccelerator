@@ -311,11 +311,11 @@ public class MainWindow extends JFrame{
 		while((this.downloadProps != null && this.downloadProps.fileDownloadedExist()) || (this.audioDownloadProps != null && this.audioDownloadProps.fileDownloadedExist())) {
 			res = JOptionPane.showOptionDialog(window, "Do you want to continue(Yes) or make another download(No) ?", "This file is already begining to be download", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, choices, defaultChoice);
 			if(res == JOptionPane.NO_OPTION) {
-				if(this.downloadProps.fileDownloadedExist())
+				if(this.downloadProps != null && this.downloadProps.fileDownloadedExist())
 					do {
 						this.downloadProps.generateAnotherFileName();
 					}while(this.downloadProps.fileDownloadedExist());
-				if(this.audioDownloadProps.fileDownloadedExist())
+				if(this.audioDownloadProps != null && this.audioDownloadProps.fileDownloadedExist())
 					do {
 						this.audioDownloadProps.generateAnotherFileName();
 					}while(this.audioDownloadProps.fileDownloadedExist());

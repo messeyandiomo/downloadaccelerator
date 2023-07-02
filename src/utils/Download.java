@@ -73,9 +73,9 @@ public class Download extends Thread implements Observable {
 					attempt--;
 					for (int i = 0; i < filesOfSubDownloads.length; i++) {
 						if(filesOfSubDownloads[i] == null) {
-							this.numberOfSubDownloadsNotCompleted--;
+							this.decrementNumberOfSubDownloadNotComplete();
 							ArrayList<Observer> listofobservers = this.subDownloadsArray[i].getObserver();
-							SubDownload newsubdownload = new SubDownload(this, i, true);
+							SubDownload newsubdownload = new SubDownload(this, i, false);
 							newsubdownload.setObserver(listofobservers);
 						}
 					}
@@ -188,6 +188,10 @@ public class Download extends Thread implements Observable {
 		this.numberOfSubDownloadsNotCompleted++;
 		if((numberOfSubDownloadsCompleted + numberOfSubDownloadsNotCompleted) == numberOfSubDownloads)
 			notify();
+	}
+	
+	private synchronized void decrementNumberOfSubDownloadNotComplete() {
+		this.numberOfSubDownloadsNotCompleted--;
 	}
 	
 	
