@@ -71,8 +71,12 @@ parts:
       gradle build && install build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
     build-packages:
       - gradle
+      - openjdk-11-jre-headless
+      - ca-certificates-java
+      - ca-certificates
     stage-packages:
       - openjdk-11-jre
+      - openjdk-11-jre-headless
       - ffmpeg
       - libavdevice58
       - libavfilter7
