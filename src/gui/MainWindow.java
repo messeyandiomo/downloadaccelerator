@@ -473,7 +473,12 @@ public class MainWindow extends JFrame{
 						// TODO Auto-generated method stub
 						if(e.getKeyCode() == KeyEvent.VK_V) {
 							try {
-								parameterFileName.replaceSelection(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
+								//parameterFileName.replaceSelection(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
+								int start = parameterFileName.getSelectionStart();
+								int end = parameterFileName.getSelectionEnd();
+								StringBuilder strBuilder = new StringBuilder(parameterFileName.getText());
+								strBuilder.replace(start, end, Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
+								parameterFileName.setText(strBuilder.toString());
 							} catch (HeadlessException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -589,9 +594,9 @@ public class MainWindow extends JFrame{
 	
 	
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new MainWindow(false);
-	}
+	}*/
 
 }
