@@ -52,7 +52,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(DownloadWindowLabel.this.statisticsManager.isSuspended()) {
@@ -68,7 +68,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
 				// TODO Auto-generated method stub
 				if(infos == size)
 					setValue("");
@@ -93,7 +93,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
 				// TODO Auto-generated method stub
 				if(getTitle().contentEquals("Size: ")) {
 					if(complete)

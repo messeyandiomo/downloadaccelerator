@@ -1,5 +1,5 @@
 package gui;
 
 public interface Observer {
-	public void update(boolean complete, long infos);
+	public void update(boolean complete, boolean suspend, long infos, Thread thread);
 }

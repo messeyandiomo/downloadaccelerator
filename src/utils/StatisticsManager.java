@@ -105,7 +105,7 @@ public class StatisticsManager extends Thread implements Observable {
 		boolean iscompleted = this.isCompleted();
 		long downloadedpersecond = this.getDownloaded();
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, downloadedpersecond);
+			obs.update(iscompleted, false, downloadedpersecond, null);
 	}
 
 	@Override

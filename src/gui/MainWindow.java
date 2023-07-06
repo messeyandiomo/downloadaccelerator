@@ -297,7 +297,7 @@ public class MainWindow extends JFrame{
 		subDownloadPropsFactoriesManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
 				// TODO Auto-generated method stub
 				if(complete)
 					buttonStart.setEnabled(true);
@@ -473,7 +473,7 @@ public class MainWindow extends JFrame{
 						// TODO Auto-generated method stub
 						if(e.getKeyCode() == KeyEvent.VK_V) {
 							try {
-								parameterFileName.setText(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
+								parameterFileName.replaceSelection(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
 							} catch (HeadlessException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -554,7 +554,7 @@ public class MainWindow extends JFrame{
 		firstdownloadtofinish.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
 				// TODO Auto-generated method stub
 				if(complete && (infos >= downloadProps.getSize())) {
 					if(!lastdownloadtofinish.isAlive()) {

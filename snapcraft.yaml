@@ -6,7 +6,7 @@ description: |
     Download Accelerator contains two parts. This part which downloads files and another part which is a firefox extension. Indeed if you want to benefit all fonctionalities of this application you must install the two parts.
     You can launch it from command line by typing "downloadaccelerator", from desktop activities by clicking to its icon and from web browser firefox if you are installed its extension.
 
-base: core20
+base: core22
 confinement: strict
 grade: stable
 
@@ -14,12 +14,11 @@ architectures:
   - build-on: amd64
   - build-on: armhf
   - build-on: arm64
-  - build-on: i386
 
 apps:
   downloadaccelerator:
     extensions:
-      - gnome-3-38
+      - gnome
     command: usr/bin/setup.sh
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
@@ -38,7 +37,7 @@ apps:
  
   downloadacceleratorserver:
     extensions:
-      - gnome-3-38
+      - gnome
     command: usr/bin/setup.sh server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
@@ -71,12 +70,12 @@ parts:
       gradle build && install build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
     build-packages:
       - gradle
-      - openjdk-11-jre-headless
+      - openjdk-17-jre-headless
       - ca-certificates-java
       - ca-certificates
     stage-packages:
-      - openjdk-11-jre
-      - openjdk-11-jre-headless
+      - openjdk-17-jre
+      - openjdk-17-jre-headless
       - ffmpeg
       - libavdevice58
       - libavfilter7

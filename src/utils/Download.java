@@ -146,7 +146,7 @@ public class Download extends Thread implements Observable {
 		boolean iscompleted = this.isCompleted();
 		long downloaded = this.getDownloaded();
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, downloaded);
+			obs.update(iscompleted, false, downloaded, null);
 	}
 
 	@Override

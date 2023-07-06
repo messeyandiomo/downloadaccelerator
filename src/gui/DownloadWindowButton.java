@@ -40,7 +40,7 @@ public class DownloadWindowButton extends JButton {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(button.isVisible())
