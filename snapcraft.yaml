@@ -18,7 +18,7 @@ architectures:
 apps:
   downloadaccelerator:
     extensions:
-      - gnome-42-2204
+      - gnome
     command: usr/bin/setup.sh
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
@@ -35,7 +35,7 @@ apps:
  
   downloadacceleratorserver:
     extensions:
-      - gnome-42-2204
+      - gnome
     command: usr/bin/setup.sh server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
