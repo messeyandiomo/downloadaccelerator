@@ -32,6 +32,7 @@ apps:
       - desktop
       - desktop-legacy
       - x11
+      - gnome-42-2204
  
   downloadacceleratorserver:
     extensions:
@@ -50,6 +51,7 @@ apps:
       - desktop
       - desktop-legacy
       - x11
+      - gnome-42-2204
   
 
 parts:
@@ -83,9 +85,3 @@ parts:
       - libslang2
       - libglu1-mesa
       - freeglut3
-
-lint:
-  ignore:
-    - library:
-      - usr/lib/jvm/java-*/lib/*.so
-
