@@ -83,7 +83,6 @@ parts:
       - ffmpeg
       - libavdevice58
       - libavfilter7
-      - libavresample4
       - libpostproc55
       - libavformat58
       - libavcodec58
