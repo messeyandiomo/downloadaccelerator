@@ -83,3 +83,9 @@ parts:
       - libslang2
       - libglu1-mesa
       - freeglut3
+
+lint:
+  ignore:
+    - library:
+      - usr/lib/jvm/java-*/lib/*.so
+
