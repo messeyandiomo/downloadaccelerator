@@ -42,13 +42,13 @@ public class DaServer {
 		return instance;
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		if(args[0].equalsIgnoreCase("client"))
 			new DownloadAccelerator("");
 		else if(args[0].equalsIgnoreCase("server"))
 			DaServer.getInstance();
-	}
+	}*/
 	
 }
 

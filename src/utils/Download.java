@@ -77,6 +77,7 @@ public class Download extends Thread implements Observable {
 							ArrayList<Observer> listofobservers = this.subDownloadsArray[i].getObserver();
 							SubDownload newsubdownload = new SubDownload(this, i, false);
 							newsubdownload.setObserver(listofobservers);
+							newsubdownload.updateObserver();
 						}
 					}
 				}
