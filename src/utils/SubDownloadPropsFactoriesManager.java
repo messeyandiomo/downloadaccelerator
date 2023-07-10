@@ -99,7 +99,7 @@ public class SubDownloadPropsFactoriesManager extends Thread implements Observab
 	public void updateObserver() {
 		// TODO Auto-generated method stub
 		for(Observer obs : this.listObserver)
-			obs.update(true, false, 0, null);
+			obs.update(true, false, 0);
 	}
 
 
@@ -107,6 +107,12 @@ public class SubDownloadPropsFactoriesManager extends Thread implements Observab
 	public void delObserver() {
 		// TODO Auto-generated method stub
 		this.listObserver = new ArrayList<Observer>();
+	}
+
+	@Override
+	public void initObserver() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

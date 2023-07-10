@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import utils.Download;
 import utils.DownloadControl;
 import utils.StatisticsManager;
-import utils.SubDownload;
 
 @SuppressWarnings("serial")
 public class DownloadWindowLabel extends JPanel {
@@ -53,7 +52,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos, SubDownload subdownload) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(DownloadWindowLabel.this.statisticsManager.isSuspended()) {
@@ -64,15 +63,27 @@ public class DownloadWindowLabel extends JPanel {
 						labelContainer.setVisible(false);
 				}
 			}
+
+			@Override
+			public void init(Thread thread) {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos, SubDownload subdownload) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(infos == size)
 					setValue("");
+			}
+
+			@Override
+			public void init(Thread thread) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}
@@ -94,7 +105,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos, SubDownload subdownload) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(getTitle().contentEquals("Size: ")) {
 					if(complete)
@@ -121,6 +132,12 @@ public class DownloadWindowLabel extends JPanel {
 						setValue(duration(currentSize, infos, filesize));
 					}
 				}
+			}
+
+			@Override
+			public void init(Thread thread) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}

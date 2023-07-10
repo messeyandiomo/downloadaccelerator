@@ -251,7 +251,13 @@ public class SubDownload extends Thread implements Observable {
 		long downloaded = this.getDownloaded();
 		boolean issuspended = this.isSuspended();
 		for(Observer obs : this.listObserver)
-			obs.update(false, issuspended, downloaded, this);
+			obs.update(false, issuspended, downloaded);
+	}
+	
+	
+	public void initObserver() {
+		for(Observer obs : this.listObserver)
+			obs.init(myself);
 	}
 
 

@@ -76,7 +76,7 @@ public class Download extends Thread implements Observable {
 							this.decrementNumberOfSubDownloadNotComplete();
 							SubDownload newsubdownload = new SubDownload(this, i, false);
 							newsubdownload.addObserver(subDownloadObserversArray[i]);
-							newsubdownload.updateObserver();
+							newsubdownload.initObserver();
 						}
 					}
 				}
@@ -146,7 +146,12 @@ public class Download extends Thread implements Observable {
 		boolean iscompleted = this.isCompleted();
 		long downloaded = this.getDownloaded();
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, false, downloaded, null);
+			obs.update(iscompleted, false, downloaded);
+	}
+	
+	@Override
+	public void initObserver() {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
