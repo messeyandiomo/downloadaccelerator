@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 
 import utils.Download;
 import utils.DownloadProps;
+import utils.SubDownload;
 
 @SuppressWarnings("serial")
 public class SubDownloadsContainer extends JPanel {
@@ -37,7 +38,7 @@ public class SubDownloadsContainer extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
+			public void update(boolean complete, boolean suspend, long infos, SubDownload subdownload) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(subDownloadsContainer.isVisible())

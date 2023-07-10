@@ -41,7 +41,6 @@ public class SubDownload extends Thread implements Observable {
 		this.setSize(subDownloadProps.getSize());
 		this.setFirst(subDownloadProps.getFirstOctet());
 		this.setDownloaded(subDownloadProps.getDownloaded());
-		this.download.recordSubDownload(subdownloadnumber, myself);
 		this.start();
 	}
 	
@@ -242,6 +241,7 @@ public class SubDownload extends Thread implements Observable {
 	public void addObserver(Observer obs) {
 		// TODO Auto-generated method stub
 		this.listObserver.add(obs);
+		this.getDownload().recordObserver(this.getSubdownloadnumber(), obs);
 	}
 
 
@@ -259,14 +259,6 @@ public class SubDownload extends Thread implements Observable {
 	public void delObserver() {
 		// TODO Auto-generated method stub
 		this.listObserver = new ArrayList<Observer>();
-	}
-	
-	public ArrayList<Observer> getObserver(){
-		return this.listObserver;
-	}
-	
-	public void setObserver(ArrayList<Observer> listobserver) {
-		this.listObserver = listobserver;
 	}
 
 

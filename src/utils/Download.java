@@ -25,7 +25,7 @@ public class Download extends Thread implements Observable {
 	private int numberOfSubDownloadsNotCompleted;
 	private int numberOfSubDownloads;
 	private boolean complete = false;
-	private SubDownload[] subDownloadsArray;
+	private Observer[] subDownloadObserversArray;/* Array of sub downloads observers */
 	
 	/*************
 	 * 
@@ -38,10 +38,10 @@ public class Download extends Thread implements Observable {
 		this.setStaticsticsManager(statisticsmanager);
 		this.numberOfSubDownloads = downloadProps.getSubDownloadCount();
 		filesOfSubDownloads = new File[numberOfSubDownloads];
-		subDownloadsArray = new SubDownload[numberOfSubDownloads];
+		subDownloadObserversArray = new Observer[numberOfSubDownloads];
 		for (int i = 0; i < numberOfSubDownloads; i++) {
 			filesOfSubDownloads[i] = null;
-			subDownloadsArray[i] = null;
+			subDownloadObserversArray[i] = null;
 		}
 		this.start();		
 	}
@@ -74,9 +74,8 @@ public class Download extends Thread implements Observable {
 					for (int i = 0; i < filesOfSubDownloads.length; i++) {
 						if(filesOfSubDownloads[i] == null) {
 							this.decrementNumberOfSubDownloadNotComplete();
-							ArrayList<Observer> listofobservers = this.subDownloadsArray[i].getObserver();
 							SubDownload newsubdownload = new SubDownload(this, i, false);
-							newsubdownload.setObserver(listofobservers);
+							newsubdownload.addObserver(subDownloadObserversArray[i]);
 							newsubdownload.updateObserver();
 						}
 					}
@@ -221,15 +220,15 @@ public class Download extends Thread implements Observable {
 	}
 	
 	/*** record sub download object ***/
-	public void recordSubDownload(int subdownloadnumber, SubDownload subdownload) {
-		this.subDownloadsArray[subdownloadnumber] = subdownload;
+	public void recordObserver(int subdownloadnumber, Observer observer) {
+		this.subDownloadObserversArray[subdownloadnumber] = observer;
 	}
 	
-	/*** get a sub download thread from his number ***/
-	public SubDownload getSubDownload(int subdownloadnumber) {
-		SubDownload result = null;
+	/*** get a sub download Observer from his number ***/
+	public Observer getSubDownloadObserver(int subdownloadnumber) {
+		Observer result = null;
 		if(subdownloadnumber < this.numberOfSubDownloads)
-			result = this.subDownloadsArray[subdownloadnumber];
+			result = this.subDownloadObserversArray[subdownloadnumber];
 		return result;
 	}
 	

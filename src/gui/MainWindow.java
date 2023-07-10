@@ -3,10 +3,11 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,6 +42,7 @@ import utils.Download;
 import utils.DownloadControl;
 import utils.DownloadDirs;
 import utils.DownloadProps;
+import utils.SubDownload;
 import utils.SubDownloadPropsFactoriesManager;
 
 
@@ -297,7 +299,7 @@ public class MainWindow extends JFrame{
 		subDownloadPropsFactoriesManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
+			public void update(boolean complete, boolean suspend, long infos, SubDownload subdownload) {
 				// TODO Auto-generated method stub
 				if(complete)
 					buttonStart.setEnabled(true);
@@ -461,42 +463,19 @@ public class MainWindow extends JFrame{
 		public void keyPressed(KeyEvent arg0) {
 			// TODO Auto-generated method stub
 			if(arg0.getKeyCode() == KeyEvent.VK_CONTROL) {
-				parameterFileName.addKeyListener(new KeyListener() {
-					
-					@Override
-					public void keyTyped(KeyEvent e) {
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void keyReleased(KeyEvent e) {
-						// TODO Auto-generated method stub
-						if(e.getKeyCode() == KeyEvent.VK_V) {
-							try {
-								//parameterFileName.replaceSelection(Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
-								int start = parameterFileName.getSelectionStart();
-								int end = parameterFileName.getSelectionEnd();
-								StringBuilder strBuilder = new StringBuilder(parameterFileName.getText());
-								strBuilder.replace(start, end, Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-"));
-								parameterFileName.setText(strBuilder.toString());
-							} catch (HeadlessException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (UnsupportedFlavorException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-					}
-					
-					@Override
-					public void keyPressed(KeyEvent e) {
-						// TODO Auto-generated method stub
-					}
-				});
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				String str = null;
+				try {
+					str = clipboard.getData(DataFlavor.stringFlavor).toString().replaceAll("[\\/\\\\]", "-");
+				} catch (UnsupportedFlavorException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				StringSelection strsel = new StringSelection(str);
+				clipboard.setContents(strsel, strsel);
 			}
 		}
 
@@ -559,7 +538,7 @@ public class MainWindow extends JFrame{
 		firstdownloadtofinish.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos, Thread thread) {
+			public void update(boolean complete, boolean suspend, long infos, SubDownload subdownload) {
 				// TODO Auto-generated method stub
 				if(complete && (infos >= downloadProps.getSize())) {
 					if(!lastdownloadtofinish.isAlive()) {
