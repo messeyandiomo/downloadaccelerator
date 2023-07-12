@@ -3,6 +3,6 @@ package gui;
 import utils.SubDownload;
 
 public interface Observer {
-	public void init(Thread thread);
-	public void update(boolean complete, boolean suspend, long infos);
+	public void update(boolean complete, boolean trytodownloadagain, long infos);
+	public void update(SubDownload subdownload, int progressbarnumber);
 }

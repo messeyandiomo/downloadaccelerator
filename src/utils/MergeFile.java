@@ -89,11 +89,6 @@ public class MergeFile extends Thread implements Observable {
 		// TODO Auto-generated method stub
 		this.listObserver = new ArrayList<Observer>();
 	}
-	
-	@Override
-	public void initObserver() {
-		// TODO Auto-generated method stub
-	}
 
 
 	public String getVideoFileName() {
@@ -153,6 +148,13 @@ public class MergeFile extends Thread implements Observable {
 
 	public void setDataPercentage(long dataPercentage) {
 		this.dataPercentage += dataPercentage;
+	}
+
+
+	@Override
+	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

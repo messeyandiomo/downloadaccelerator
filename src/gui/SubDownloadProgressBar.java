@@ -44,36 +44,35 @@ public class SubDownloadProgressBar extends JProgressBar {
 		this.subDownloadObserver = new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(infos != previousInfos) {
 					previousInfos = infos;
 					subDownloadProgressBar.setValue((int) ((infos*barLength)/filesize));
 				}
+				if(!subDownload.isAlive()) {
+					subDownloadProgressBar.setForeground(Color.LIGHT_GRAY);
+					subDownloadProgressBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+				}
 				else {
-					if(suspend) {
-						subDownloadProgressBar.setForeground(Color.LIGHT_GRAY);
-						subDownloadProgressBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+					if(subDownloadProgressBar.getForeground().equals(Color.LIGHT_GRAY)) {
+						subDownloadProgressBar.setForeground(originalColor);
+						subDownloadProgressBar.setBorder(originalBorder);
 					}
-					else
-						if(subDownloadProgressBar.getForeground().equals(Color.LIGHT_GRAY)) {
-							subDownloadProgressBar.setForeground(originalColor);
-							subDownloadProgressBar.setBorder(originalBorder);
-						}
 				}
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
-				subDownload = (SubDownload) thread;
+				
 			}
 		};
 		
 		this.downloadObserver = new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					subDownloadProgressBar.setForeground(Color.LIGHT_GRAY);
@@ -82,7 +81,7 @@ public class SubDownloadProgressBar extends JProgressBar {
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -106,7 +105,14 @@ public class SubDownloadProgressBar extends JProgressBar {
 		this.filesize = filesize;
 	}
 	
+	public void setSubDownload(SubDownload subdownload) {
+		this.subDownload = subdownload;
+		this.subDownload.addObserver(subDownloadObserver);
+	}
 	
+	public SubDownload getSubDownload() {
+		return this.subDownload;
+	}
 	
 	public void pause() {
 		if(this.subDownload.isAlive())

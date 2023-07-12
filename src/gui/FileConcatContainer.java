@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import utils.Download;
 import utils.DownloadControl;
 import utils.MergeFile;
+import utils.SubDownload;
 
 @SuppressWarnings("serial")
 public class FileConcatContainer extends JPanel {
@@ -48,7 +49,7 @@ public class FileConcatContainer extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(!fileConcatContainer.isVisible())
@@ -61,7 +62,7 @@ public class FileConcatContainer extends JPanel {
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -77,7 +78,7 @@ public class FileConcatContainer extends JPanel {
 		this.mergeFile.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(!fileConcatContainer.isVisible())
@@ -89,7 +90,7 @@ public class FileConcatContainer extends JPanel {
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
 				
 			}

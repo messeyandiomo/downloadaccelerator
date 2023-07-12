@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import utils.Download;
+import utils.SubDownload;
 
 @SuppressWarnings("serial")
 public class DownloadWindowButton extends JButton {
@@ -40,7 +41,7 @@ public class DownloadWindowButton extends JButton {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(button.isVisible())
@@ -59,7 +60,7 @@ public class DownloadWindowButton extends JButton {
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
 				
 			}

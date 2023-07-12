@@ -116,7 +116,7 @@ public class StatisticsManager extends Thread implements Observable {
 
 
 	@Override
-	public void initObserver() {
+	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
 		// TODO Auto-generated method stub
 		
 	}

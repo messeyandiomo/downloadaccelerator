@@ -25,7 +25,8 @@ public class Download extends Thread implements Observable {
 	private int numberOfSubDownloadsNotCompleted;
 	private int numberOfSubDownloads;
 	private boolean complete = false;
-	private Observer[] subDownloadObserversArray;/* Array of sub downloads observers */
+	private int attempt = 0;
+	
 	
 	/*************
 	 * 
@@ -36,13 +37,11 @@ public class Download extends Thread implements Observable {
 		super();
 		this.setDownloadProps(downloadprops);
 		this.setStaticsticsManager(statisticsmanager);
+		this.setAttempt(this.getDownloadProps().getSubDownloadCount());
 		this.numberOfSubDownloads = downloadProps.getSubDownloadCount();
 		filesOfSubDownloads = new File[numberOfSubDownloads];
-		subDownloadObserversArray = new Observer[numberOfSubDownloads];
-		for (int i = 0; i < numberOfSubDownloads; i++) {
+		for (int i = 0; i < numberOfSubDownloads; i++)
 			filesOfSubDownloads[i] = null;
-			subDownloadObserversArray[i] = null;
-		}
 		this.start();		
 	}
 	
@@ -50,7 +49,6 @@ public class Download extends Thread implements Observable {
 	
 	public void run() {
 		boolean iscompleted = false;
-		int attempt = this.getDownloadProps().getSubDownloadCount();
 		while(true) {
 			try {
 				synchronized (this) {
@@ -64,19 +62,19 @@ public class Download extends Thread implements Observable {
 			if(iscompleted)
 				break;
 			else {
-				if(attempt == 0) {
+				if(this.getAttempt() == 0) {
 					this.staticsticsManager.pause();
 					while(!staticsticsManager.isSuspended()) Thread.yield();
 					this.updateObserver();
 				}
 				else {
-					attempt--;
+					this.setAttempt(this.getAttempt() - 1);
+					this.resetNumberOfSubDownloadNotComplete();
 					for (int i = 0; i < filesOfSubDownloads.length; i++) {
 						if(filesOfSubDownloads[i] == null) {
-							this.decrementNumberOfSubDownloadNotComplete();
+							//this.decrementNumberOfSubDownloadNotComplete();
 							SubDownload newsubdownload = new SubDownload(this, i, false);
-							newsubdownload.addObserver(subDownloadObserversArray[i]);
-							newsubdownload.initObserver();
+							this.updateObserver(newsubdownload, i);
 						}
 					}
 				}
@@ -149,9 +147,12 @@ public class Download extends Thread implements Observable {
 			obs.update(iscompleted, false, downloaded);
 	}
 	
+	
 	@Override
-	public void initObserver() {
+	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
 		// TODO Auto-generated method stub
+		for(Observer obs : this.listObserver)
+			obs.update(subdownload, progressbarnumber);
 	}
 
 	@Override
@@ -195,8 +196,13 @@ public class Download extends Thread implements Observable {
 			notify();
 	}
 	
+	
 	private synchronized void decrementNumberOfSubDownloadNotComplete() {
 		this.numberOfSubDownloadsNotCompleted--;
+	}
+	
+	private synchronized void resetNumberOfSubDownloadNotComplete() {
+		this.numberOfSubDownloadsNotCompleted = 0;
 	}
 	
 	
@@ -223,19 +229,17 @@ public class Download extends Thread implements Observable {
 	public void setDownloadProps(DownloadProps downloadProps) {
 		this.downloadProps = downloadProps;
 	}
-	
-	/*** record sub download object ***/
-	public void recordObserver(int subdownloadnumber, Observer observer) {
-		this.subDownloadObserversArray[subdownloadnumber] = observer;
+
+
+
+	public int getAttempt() {
+		return attempt;
 	}
-	
-	/*** get a sub download Observer from his number ***/
-	public Observer getSubDownloadObserver(int subdownloadnumber) {
-		Observer result = null;
-		if(subdownloadnumber < this.numberOfSubDownloads)
-			result = this.subDownloadObserversArray[subdownloadnumber];
-		return result;
+
+
+
+	public void setAttempt(int attempt) {
+		this.attempt = attempt;
 	}
-	
 	
 }

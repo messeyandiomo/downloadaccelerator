@@ -110,7 +110,7 @@ public class SubDownloadPropsFactoriesManager extends Thread implements Observab
 	}
 
 	@Override
-	public void initObserver() {
+	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
 		// TODO Auto-generated method stub
 		
 	}

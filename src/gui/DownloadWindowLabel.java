@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import utils.Download;
 import utils.DownloadControl;
 import utils.StatisticsManager;
+import utils.SubDownload;
 
 @SuppressWarnings("serial")
 public class DownloadWindowLabel extends JPanel {
@@ -52,7 +53,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(DownloadWindowLabel.this.statisticsManager.isSuspended()) {
@@ -65,7 +66,7 @@ public class DownloadWindowLabel extends JPanel {
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -74,14 +75,14 @@ public class DownloadWindowLabel extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(infos == size)
 					setValue("");
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
 				
 			}
@@ -105,7 +106,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean trytodownloadagain, long infos) {
 				// TODO Auto-generated method stub
 				if(getTitle().contentEquals("Size: ")) {
 					if(complete)
@@ -135,7 +136,7 @@ public class DownloadWindowLabel extends JPanel {
 			}
 
 			@Override
-			public void init(Thread thread) {
+			public void update(SubDownload subdownload, int progressbarnumber) {
 				// TODO Auto-generated method stub
 				
 			}
