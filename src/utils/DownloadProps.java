@@ -225,6 +225,8 @@ public class DownloadProps {
 
 
 	public void setSubDownloadProps(int subdownloadpropsnumber, SubDownloadProps subdownloadprops) {
+		if(this.subDownloadProps == null)
+			this.subDownloadProps = new SubDownloadProps[this.getSubDownloadCount()]; 
 		this.subDownloadProps[subdownloadpropsnumber] = subdownloadprops;
 	}
 	
