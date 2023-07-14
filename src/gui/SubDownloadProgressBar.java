@@ -128,7 +128,7 @@ public class SubDownloadProgressBar extends JProgressBar {
 			subDownloadProgressBar.setBorder(originalBorder);
 			this.subDownload = new SubDownload(download, subDownloadNumber, false);
 			this.subDownload.addObserver(subDownloadObserver);
-			this.download.addObserver(downloadObserver);
+			//this.download.addObserver(downloadObserver);
 		}
 	}
 

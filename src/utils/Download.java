@@ -85,6 +85,17 @@ public class Download extends Thread implements Observable {
 			staticsticsManager.complete();
 			while(staticsticsManager.isAlive()) Thread.yield();
 			downloadedFile = new File(DownloadDirs.getInstance().getDestinationDir() + downloadProps.getFilename());
+			if(downloadedFile.exists()) {
+				String filename = downloadedFile.getName();
+				String basename = "";
+				String extension = "";
+				int lastindex = filename.lastIndexOf('.');
+				if(lastindex > 0 && lastindex < filename.length()) {
+					basename = filename.substring(0, lastindex);
+					extension = filename.substring(lastindex);
+				}
+				downloadedFile = new File(basename + "-0" + extension);
+			}
 			try {
 				OutputStream out = new FileOutputStream(downloadedFile);
 				InputStream in = null;
