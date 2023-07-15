@@ -59,16 +59,6 @@ public class DownloadWindowButton extends JButton {
 					if(resume)
 						button.setVisible(false);
 				}
-				/*else {
-					if(!resume) {
-						if(button.isVisible())
-							button.setVisible(false);
-					}
-					else {
-						if(!button.isVisible())
-							button.setVisible(true);
-					}
-				}*/
 			}
 		});
 	}
