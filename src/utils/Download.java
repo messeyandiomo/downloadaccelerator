@@ -18,6 +18,7 @@ public class Download extends Thread implements Observable {
 	private DownloadProps downloadProps = null;
 	private StatisticsManager staticsticsManager;
 	private ArrayList<Observer> listObserver = new ArrayList<Observer>();
+	private ArrayList<Integer> subdownloadsNumbersNotComplete = null;
 	private File[] filesOfSubDownloads;
 	private File downloadedFile;
 	private long downloaded = 0;
@@ -25,6 +26,7 @@ public class Download extends Thread implements Observable {
 	private int numberOfSubDownloadsNotCompleted;
 	private int numberOfSubDownloads;
 	private boolean complete = false;
+	private boolean suspend = false;
 	private int attempt = 0;
 	
 	
@@ -63,39 +65,31 @@ public class Download extends Thread implements Observable {
 				break;
 			else {
 				if(this.getAttempt() == 0) {
+					this.subdownloadsNumbersNotComplete = null;
+					this.setSuspend(true);
 					this.staticsticsManager.pause();
 					while(!staticsticsManager.isSuspended()) Thread.yield();
-					this.updateObserver();
 				}
 				else {
 					this.setAttempt(this.getAttempt() - 1);
+					this.setSuspend(false);
 					this.resetNumberOfSubDownloadNotComplete();
+					this.subdownloadsNumbersNotComplete = new ArrayList<>();
 					for (int i = 0; i < filesOfSubDownloads.length; i++) {
 						if(filesOfSubDownloads[i] == null) {
-							//this.decrementNumberOfSubDownloadNotComplete();
-							SubDownload newsubdownload = new SubDownload(this, i, false);
-							this.updateObserver(newsubdownload, i);
+							this.subdownloadsNumbersNotComplete.add(i);
 						}
 					}
 				}
+				this.updateObserver();
 			}
 		}
 		int numberofcomplete = this.getNumberOfSubDownloadsCompleted();
 		if(numberofcomplete == numberOfSubDownloads) {
 			staticsticsManager.complete();
 			while(staticsticsManager.isAlive()) Thread.yield();
+			downloadProps.setFilename(DownloadControl.generateFilename(DownloadDirs.getInstance().getDestinationDir(), downloadProps.getFilename()));
 			downloadedFile = new File(DownloadDirs.getInstance().getDestinationDir() + downloadProps.getFilename());
-			if(downloadedFile.exists()) {
-				String filename = downloadedFile.getName();
-				String basename = "";
-				String extension = "";
-				int lastindex = filename.lastIndexOf('.');
-				if(lastindex > 0 && lastindex < filename.length()) {
-					basename = filename.substring(0, lastindex);
-					extension = filename.substring(lastindex);
-				}
-				downloadedFile = new File(basename + "-0" + extension);
-			}
 			try {
 				OutputStream out = new FileOutputStream(downloadedFile);
 				InputStream in = null;
@@ -152,19 +146,21 @@ public class Download extends Thread implements Observable {
 	@Override
 	public void updateObserver() {
 		// TODO Auto-generated method stub
+		ArrayList<Integer> cloneofsubdownloadsnumbersnotcomplete = null;
+		if(subdownloadsNumbersNotComplete != null) {
+			cloneofsubdownloadsnumbersnotcomplete = new ArrayList<>();
+			for (int i = 0; i < subdownloadsNumbersNotComplete.size(); i++) {
+				cloneofsubdownloadsnumbersnotcomplete.add(subdownloadsNumbersNotComplete.get(i));
+			}
+		}
 		boolean iscompleted = this.isCompleted();
+		boolean issuspended = this.isSuspend();
 		long downloaded = this.getDownloaded();
+		
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, false, downloaded);
+			obs.update(iscompleted, issuspended, cloneofsubdownloadsnumbersnotcomplete, downloaded);
 	}
 	
-	
-	@Override
-	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
-		// TODO Auto-generated method stub
-		for(Observer obs : this.listObserver)
-			obs.update(subdownload, progressbarnumber);
-	}
 
 	@Override
 	public void delObserver() {
@@ -188,6 +184,8 @@ public class Download extends Thread implements Observable {
 	public synchronized void reset() {
 		numberOfSubDownloadsCompleted = 0;
 		numberOfSubDownloadsNotCompleted = 0;
+		complete = false;
+		suspend = false;
 	}
 	
 
@@ -207,10 +205,6 @@ public class Download extends Thread implements Observable {
 			notify();
 	}
 	
-	
-	private synchronized void decrementNumberOfSubDownloadNotComplete() {
-		this.numberOfSubDownloadsNotCompleted--;
-	}
 	
 	private synchronized void resetNumberOfSubDownloadNotComplete() {
 		this.numberOfSubDownloadsNotCompleted = 0;
@@ -251,6 +245,18 @@ public class Download extends Thread implements Observable {
 
 	public void setAttempt(int attempt) {
 		this.attempt = attempt;
+	}
+
+
+
+	public boolean isSuspend() {
+		return suspend;
+	}
+
+
+
+	public void setSuspend(boolean suspend) {
+		this.suspend = suspend;
 	}
 	
 }

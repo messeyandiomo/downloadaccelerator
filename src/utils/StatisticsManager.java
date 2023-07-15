@@ -103,22 +103,16 @@ public class StatisticsManager extends Thread implements Observable {
 	public void updateObserver() {
 		// TODO Auto-generated method stub
 		boolean iscompleted = this.isCompleted();
+		boolean issuspended = this.isSuspended();
 		long downloadedpersecond = this.getDownloaded();
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, false, downloadedpersecond);
+			obs.update(iscompleted, issuspended, null, downloadedpersecond);
 	}
 
 	@Override
 	public void delObserver() {
 		// TODO Auto-generated method stub
 		this.listObserver = new ArrayList<Observer>();
-	}
-
-
-	@Override
-	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

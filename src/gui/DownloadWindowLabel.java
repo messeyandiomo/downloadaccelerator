@@ -1,6 +1,7 @@
 package gui;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -9,7 +10,6 @@ import javax.swing.JPanel;
 import utils.Download;
 import utils.DownloadControl;
 import utils.StatisticsManager;
-import utils.SubDownload;
 
 @SuppressWarnings("serial")
 public class DownloadWindowLabel extends JPanel {
@@ -53,7 +53,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(DownloadWindowLabel.this.statisticsManager.isSuspended()) {
@@ -64,27 +64,15 @@ public class DownloadWindowLabel extends JPanel {
 						labelContainer.setVisible(false);
 				}
 			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				
-			}
 		});
 		
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
 				if(infos == size)
 					setValue("");
-			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 	}
@@ -106,7 +94,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
 				if(getTitle().contentEquals("Size: ")) {
 					if(complete)
@@ -133,12 +121,6 @@ public class DownloadWindowLabel extends JPanel {
 						setValue(duration(currentSize, infos, filesize));
 					}
 				}
-			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 	}

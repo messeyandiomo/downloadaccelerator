@@ -1,12 +1,11 @@
 package gui;
 import java.awt.Dimension;
-
+import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import utils.Download;
 import utils.DownloadProps;
-import utils.SubDownload;
 
 @SuppressWarnings("serial")
 public class SubDownloadsContainer extends JPanel {
@@ -38,18 +37,17 @@ public class SubDownloadsContainer extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(subDownloadsContainer.isVisible())
 						subDownloadsContainer.setVisible(false);
 				}
-			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				subDownloadProgressBarArray[progressbarnumber].setSubDownload(subdownload);
+				else if(subdownloadnumbersnotcomplete != null) {
+					for (int i = 0; i < subdownloadnumbersnotcomplete.size(); i++) {
+						subDownloadProgressBarArray[subdownloadnumbersnotcomplete.get(i)].reset();
+					}
+				}
 			}
 		});		
 	}

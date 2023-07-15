@@ -42,7 +42,6 @@ import utils.Download;
 import utils.DownloadControl;
 import utils.DownloadDirs;
 import utils.DownloadProps;
-import utils.SubDownload;
 import utils.SubDownloadPropsFactoriesManager;
 
 
@@ -299,16 +298,10 @@ public class MainWindow extends JFrame{
 		subDownloadPropsFactoriesManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
 				if(complete)
 					buttonStart.setEnabled(true);
-			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		/** verify if a file with the same name already exist in temporarily folder **/
@@ -544,7 +537,7 @@ public class MainWindow extends JFrame{
 		firstdownloadtofinish.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
 				if(complete && (infos >= downloadProps.getSize())) {
 					if(!lastdownloadtofinish.isAlive()) {
@@ -572,12 +565,6 @@ public class MainWindow extends JFrame{
 						}
 					}
 				}
-			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 	}

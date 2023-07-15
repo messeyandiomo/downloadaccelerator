@@ -250,7 +250,7 @@ public class SubDownload extends Thread implements Observable {
 		long downloaded = this.getDownloaded();
 		boolean issuspended = this.isSuspended();
 		for(Observer obs : this.listObserver)
-			obs.update(false, issuspended, downloaded);
+			obs.update(false, issuspended, null, downloaded);
 	}
 
 
@@ -311,13 +311,6 @@ public class SubDownload extends Thread implements Observable {
 	@Override
 	public void interrupt() {
 		super.interrupt();
-	}
-
-
-	@Override
-	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 }

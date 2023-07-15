@@ -1,8 +1,7 @@
 package gui;
 
-import utils.SubDownload;
+import java.util.ArrayList;
 
 public interface Observer {
-	public void update(boolean complete, boolean trytodownloadagain, long infos);
-	public void update(SubDownload subdownload, int progressbarnumber);
+	public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos);
 }

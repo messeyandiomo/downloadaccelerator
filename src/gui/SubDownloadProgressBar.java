@@ -1,5 +1,6 @@
 package gui;
 import java.awt.Color;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JProgressBar;
@@ -44,13 +45,13 @@ public class SubDownloadProgressBar extends JProgressBar {
 		this.subDownloadObserver = new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
 				if(infos != previousInfos) {
 					previousInfos = infos;
 					subDownloadProgressBar.setValue((int) ((infos*barLength)/filesize));
 				}
-				if(!subDownload.isAlive()) {
+				if(!subDownload.isAlive() || suspend) {
 					subDownloadProgressBar.setForeground(Color.LIGHT_GRAY);
 					subDownloadProgressBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 				}
@@ -61,29 +62,17 @@ public class SubDownloadProgressBar extends JProgressBar {
 					}
 				}
 			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				
-			}
 		};
 		
 		this.downloadObserver = new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean trytodownloadagain, long infos) {
+			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
-				if(!complete) {
+				if(!complete && suspend) {
 					subDownloadProgressBar.setForeground(Color.LIGHT_GRAY);
 					subDownloadProgressBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 				}
-			}
-
-			@Override
-			public void update(SubDownload subdownload, int progressbarnumber) {
-				// TODO Auto-generated method stub
-				
 			}
 		};
 		
@@ -105,8 +94,9 @@ public class SubDownloadProgressBar extends JProgressBar {
 		this.filesize = filesize;
 	}
 	
-	public void setSubDownload(SubDownload subdownload) {
-		this.subDownload = subdownload;
+	
+	public void reset() {
+		this.subDownload = new SubDownload(this.download, this.subDownloadNumber, false);
 		this.subDownload.addObserver(subDownloadObserver);
 	}
 	

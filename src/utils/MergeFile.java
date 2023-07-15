@@ -81,7 +81,7 @@ public class MergeFile extends Thread implements Observable {
 		boolean iscompleted = this.isCompleted();
 		long datapercentage = this.getDataPercentage();
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, false, datapercentage);
+			obs.update(iscompleted, false, null, datapercentage);
 	}
 
 	@Override
@@ -148,13 +148,6 @@ public class MergeFile extends Thread implements Observable {
 
 	public void setDataPercentage(long dataPercentage) {
 		this.dataPercentage += dataPercentage;
-	}
-
-
-	@Override
-	public void updateObserver(SubDownload subdownload, int progressbarnumber) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

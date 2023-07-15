@@ -1,4 +1,5 @@
 package utils;
+import java.io.File;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -13,7 +14,7 @@ public class DownloadControl {
 	
 	
 	
-	//conversion des bytes en kilo, mega ou gigabytes
+	/*** conversion des bytes en kilo, mega ou gigabytes ***/
 	public static String convertSize(long fileSize) {
 		
 		String retour = "0";
@@ -44,4 +45,24 @@ public class DownloadControl {
 	}
 	
 	
+	/*** generate final output filename ***/
+	public static String generateFilename(String dirpath, String filename) {
+		
+		String finalfilename = filename;
+		String basename = "";
+		String extension = "";
+		int i = 1;
+		int lastindex = filename.lastIndexOf('.');
+		if(lastindex > 0 && lastindex < filename.length()) {
+			basename = filename.substring(0, lastindex);
+			extension = filename.substring(lastindex);
+		}
+		
+		while (new File(dirpath + finalfilename).exists()) {
+			finalfilename = basename + i + extension;
+			i++;
+		}
+		
+		return finalfilename;
+	}
 }
