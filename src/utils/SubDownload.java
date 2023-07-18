@@ -91,6 +91,14 @@ public class SubDownload extends Thread implements Observable {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
+						try {
+							outputStream.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						subDownloadProps.setOutputStream(null);
+						listObserver = null;
 						download.notifyNotComplete();
 						if(myself.isAlive())
 							myself.interrupt();
