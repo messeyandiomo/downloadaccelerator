@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import decryption.Common;
-import decryption.MyJSONObject;
 
 public class Youtube {
 	
@@ -77,16 +76,24 @@ public class Youtube {
 		String result = null;
 		int startIdx = 0;
 		int endIdx = 0;
-		MyJSONObject playerField;
+		//MyJSONObject playerField;
+		JsonNode playerField;
 		
 		startIdx = webpage.indexOf("PLAYER_JS_URL");
 		if(startIdx == -1)
 			startIdx = webpage.indexOf("jsUrl");
 		endIdx = webpage.indexOf(",", startIdx);
 		try {
+			/*
 			playerField = MyJSONObject.parse("{" + webpage.substring(startIdx - 1, endIdx) + "}");
 			ArrayList<String> playerFieldKeys = new ArrayList<String>(playerField.keySet());
 			result = playerField.get(playerFieldKeys.get(playerFieldKeys.size() - 1)).getStr();
+			*/
+			playerField = JSON.parse("{" + webpage.substring(startIdx - 1, endIdx) + "}");
+			if(playerField.get("PLAYER_JS_URL") != null)
+				result = playerField.get("PLAYER_JS_URL").asText();
+			else if(playerField.get("jsUrl") != null)
+				result = playerField.get("jsUrl").asText();
 			if(result.startsWith("/"))
 				result = "https://www.youtube.com" + result;
 		} catch (Exception e) {
@@ -309,10 +316,16 @@ public class Youtube {
 				}
 				/** concatenation of stream data formats and stream adaptative formats **/
 				result = new ArrayList<>();
+				for (int i = mediaAdaptativeFormats.size() - 1; i >= 0; i--)
+					result.add(mediaAdaptativeFormats.get(i));
+				for (int i = mediaFormats.size() - 1; i >= 0 ; i--)
+					result.add(mediaFormats.get(i));
+				/*
 				for (int i = 0; i < mediaFormats.size(); i++)
 					result.add(mediaFormats.get(i));
 				for (int i = 0; i < mediaAdaptativeFormats.size(); i++)
 					result.add(mediaAdaptativeFormats.get(i));
+				*/
 			}
 		}
 		
