@@ -19,17 +19,26 @@ class MyDecryptFunctCaller implements MyInterface {
 	private MyDict objects = null;
 	private MyObject functions = null;
 	
-	public MyDecryptFunctCaller(String[] argnames, String functionCode, String playerCode) {
+	
+	public MyDecryptFunctCaller(String functionCode, String playerCode) {
 		// TODO Auto-generated constructor stub
-		this.argnames = new String[argnames.length];
-		for (int i = 0; i < argnames.length; i++)
-			this.argnames[i] = argnames[i];
 		this.functionCode = functionCode;
 		this.playerCode = playerCode;
 		
 		this.operatorDictionary = OperatorsDictionary.getInstance();
 		this.objects = new MyDict();
 		this.functions = new MyObject();
+	}
+	
+	
+	public MyDecryptFunctCaller(String[] argnames, String functionCode, String playerCode) {
+		// TODO Auto-generated constructor stub
+		this(functionCode, playerCode);
+		if(argnames != null) {
+			this.argnames = new String[argnames.length];
+			for (int i = 0; i < argnames.length; i++)
+				this.argnames[i] = argnames[i];
+		}
 	}
 	
 	public OperatorsDictionary resetOperatorsDictionary() {
@@ -41,39 +50,20 @@ class MyDecryptFunctCaller implements MyInterface {
 	public String resf(MyType[] args) {
 		// TODO Auto-generated method stub
 		PairMyType result = null;
-		Hashtable<String, MyType> localVars = new Hashtable<String, MyType>(argnames.length);
+		Hashtable<String, MyType> localVars = null;
 		
-		System.out.println("length of argnames is : " + argnames.length);
+		if(this.argnames != null) {
+			localVars = new Hashtable<String, MyType>(argnames.length);
+			for (int i = 0; i < argnames.length; i++)
+				localVars.put(argnames[i], args[i]);
+		}
 		
-		for (int i = 0; i < argnames.length; i++)
-			localVars.put(argnames[i], args[i]);
-		
-		for (String stmt : functionCode.split(";")) {
-			
-			System.out.println("localVars before statement : " + stmt);
-			if(localVars.get(argnames[0]).getStr() != null)
-				System.out.println(localVars.get(argnames[0]).getStr());
-			else if(localVars.get(argnames[0]).getArray() != null)
-				for (int i = 0; i < localVars.get(argnames[0]).getArray().length; i++) {
-					System.out.print(localVars.get(argnames[0]).getArray()[i] + ",");
-				}
-			System.out.println();
-			
-			
-			result = interpretStatement(stmt, localVars, playerCode);
-			
-			System.out.println("localVars after statement : " + stmt);
-			if(localVars.get(argnames[0]).getStr() != null)
-				System.out.println("localVars does not change !!");
-			else if(localVars.get(argnames[0]).getArray() != null)
-				for (int i = 0; i < localVars.get(argnames[0]).getArray().length; i++) {
-					System.out.print(localVars.get(argnames[0]).getArray()[i] + ",");
-				}
-			System.out.println();
-			
-			
-			if(result.getAbort())
-				break;
+		if(this.functionCode != null) {
+			for (String stmt : functionCode.split(";")) {
+				result = interpretStatement(stmt, localVars, playerCode);
+				if(result.getAbort())
+					break;
+			}
 		}
 		
 		return result.getRes().getStr();

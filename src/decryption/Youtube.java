@@ -62,11 +62,13 @@ public class Youtube {
 				System.out.println(functionCode);
 			}
 			System.out.print("Arguments names : ");
-			for (int i = 0; i < argnames.length; i++) {
-				System.out.println(argnames[i]);
+			if(argnames != null) {
+				for (int i = 0; i < argnames.length; i++)
+					System.out.println(argnames[i]);
+				toReturn = new MyDecryptFunctCaller(argnames, functionCode, this.playerCode);
 			}
-			
-			toReturn = new MyDecryptFunctCaller(argnames, functionCode, this.playerCode);
+			else
+				toReturn = new MyDecryptFunctCaller(functionCode, this.playerCode);
 			/** end of real extraction */
 			cache.store(playerid, toReturn);
 		}

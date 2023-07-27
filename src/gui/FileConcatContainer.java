@@ -101,5 +101,10 @@ public class FileConcatContainer extends JPanel {
 	public void setMergeFile(MergeFile mergeFile) {
 		this.mergeFile = mergeFile;
 	}
+	
+	/*** set the string who is in the middle of fileConcatProgressBar ***/
+	public void setString(String str) {
+		this.fileConcatProgressBar.setString(str);
+	}
 
 }

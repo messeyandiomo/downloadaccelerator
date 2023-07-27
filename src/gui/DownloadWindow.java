@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import utils.Download;
+import utils.DownloadControl;
 import utils.DownloadDirs;
 import utils.DownloadProps;
 import utils.StatisticsManager;
@@ -18,7 +19,6 @@ public class DownloadWindow extends JInternalFrame{
 	
 	private DownloadWindowLabel fileName;
 	private SubDownloadProgressBar[] subDownloadWindows;
-	private SubDownloadProgressBar fileConcatProgressBar;
 	private SubDownloadsContainer containerSubDownloadWindows;
 	private FileConcatContainer containerFileConcatProgressBar;
 	private JPanel containerProgressBars = new JPanel();
@@ -136,13 +136,6 @@ public class DownloadWindow extends JInternalFrame{
 		
 	}
 	
-	public SubDownloadProgressBar getFileConcatProgressBar() {
-		
-		return fileConcatProgressBar;
-		
-	}
-	
-	
 	
 	/**
 	 * @return the download
@@ -158,7 +151,20 @@ public class DownloadWindow extends JInternalFrame{
 	public void setDownload(Download download) {
 		this.download = download;
 	}
-
+	
+	/**
+	 * set the title of download window
+	 */
+	public void setDownloadName(String title) {
+		this.fileName.setTitle(title);
+	}
+	
+	/**
+	 * set the size of download window
+	 */
+	public void setDownloadSize(long size) {
+		this.containerFileConcatProgressBar.setString(DownloadControl.convertSize(size));
+	}
 
 
 	/** écouteur du bouton suspend **/

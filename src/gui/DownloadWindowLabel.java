@@ -71,8 +71,10 @@ public class DownloadWindowLabel extends JPanel {
 			@Override
 			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
 				// TODO Auto-generated method stub
-				if(infos == size)
+				if(complete)
 					setValue("");
+				/*if(infos == size)
+					setValue("");*/
 			}
 		});
 	}

@@ -59,8 +59,18 @@ public class SubDownload extends Thread implements Observable {
 		else
 			downloadFile();
 		
-		if(complete)
+		if(complete) {
+			if(outputStream != null) {
+				try {
+					outputStream.close();
+					subDownloadProps.setOutputStream(null);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			this.download.notifyComplete(subdownloadnumber, file);
+		}
 		else
 			if(!this.isCancel())
 				this.download.notifyNotComplete();
@@ -91,17 +101,20 @@ public class SubDownload extends Thread implements Observable {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						try {
-							outputStream.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						subDownloadProps.setOutputStream(null);
-						listObserver = null;
-						download.notifyNotComplete();
-						if(myself.isAlive())
+						while(myself.isAlive()) {
 							myself.interrupt();
+							synchronized (this) {
+								try {
+									wait(1000);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						subDownloadProps.setInputStream(null);
+						download.notifyNotComplete();
+						System.out.println(subdownloadnumber + " not complete for having make more than 10 seconds");
 					}
 				}, 10000);
 				try {
@@ -159,7 +172,7 @@ public class SubDownload extends Thread implements Observable {
 			if(remainByteCount == 0)
 				complete = true;
 		}
-		
+		/*
 		if(outputStream != null) {
 			try {
 				outputStream.close();
@@ -169,6 +182,7 @@ public class SubDownload extends Thread implements Observable {
 				e.printStackTrace();
 			}
 		}
+		*/
 		if(inputStream != null) {
 			try {
 				inputStream.close();

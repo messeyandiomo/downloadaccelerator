@@ -47,7 +47,7 @@ public class DownloadWindowButton extends JButton {
 					if(button.isVisible())
 						button.setVisible(false);
 				}
-				else if(suspend) {
+				else if(download.getStaticsticsManager().isSuspended()) {
 					if(!resume)
 						button.setVisible(false);
 					if(resume)

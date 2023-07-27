@@ -15,6 +15,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +40,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import decryption.Common;
 import decryption.Youtube;
 import net.gcardone.junidecode.Junidecode;
-import utils.Download;
 import utils.DownloadControl;
 import utils.DownloadDirs;
 import utils.DownloadProps;
@@ -512,17 +513,60 @@ public class MainWindow extends JFrame{
 	
 	/*** listener class of button Launch ***/
 	class startButtonListener implements ActionListener{
+		DownloadWindow newDownloadAudio = null;
+		DownloadWindow newDownloadVideo = null;
+		DownloadWindowsContainer containerWindow = DownloadWindowsContainer.getInstance();
 		
 		public void actionPerformed(ActionEvent ev) {
+			newDownloadVideo = new DownloadWindow(downloadProps);
 			downloadProps.setFilename(parameterFileName.getText());
-			DownloadWindow newDownloadVideo = new DownloadWindow(downloadProps);
-			DownloadWindowsContainer containerWindow = DownloadWindowsContainer.getInstance();
 			containerWindow.addDownloadWindow(newDownloadVideo);
 			if(audioDownloadProps != null) {
-				DownloadWindow newDownloadAudio = new DownloadWindow(audioDownloadProps);
+				newDownloadAudio = new DownloadWindow(audioDownloadProps);
 				containerWindow.addDownloadWindow(newDownloadAudio);
-				linkDownloads(newDownloadVideo, newDownloadAudio, containerWindow);
-				linkDownloads(newDownloadAudio, newDownloadVideo, containerWindow);
+				
+				newDownloadAudio.getDownload().addObserver(new Observer() {
+					
+					@Override
+					public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete,
+							long infos) {
+						// TODO Auto-generated method stub
+						if(complete && (infos >= audioDownloadProps.getSize())) {
+							if(!newDownloadVideo.getDownload().isAlive()) {
+								containerWindow.removeDownloadWindow(newDownloadVideo);
+								mergeAudioVideo();
+								newDownloadAudio.setDownloadName(downloadProps.getFilename());
+								try {
+									newDownloadAudio.setDownloadSize(Files.size(Paths.get(downloadDirs.getDestinationDir() + downloadProps.getFilename())));
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				});
+				
+				newDownloadVideo.getDownload().addObserver(new Observer() {
+					
+					@Override
+					public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete,
+							long infos) {
+						// TODO Auto-generated method stub
+						if(complete && (infos >= downloadProps.getSize())) {
+							if(!newDownloadAudio.getDownload().isAlive()) {
+								containerWindow.removeDownloadWindow(newDownloadAudio);
+								mergeAudioVideo();
+								try {
+									newDownloadVideo.setDownloadSize(Files.size(Paths.get(downloadDirs.getDestinationDir() + downloadProps.getFilename())));
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				});
 			}
 			containerWindow.toFront();
 			window.dispose();
@@ -531,44 +575,30 @@ public class MainWindow extends JFrame{
 	
 	
 	/*** merger of audio and video file ***/
-	void linkDownloads(DownloadWindow lastwindowtofinish, DownloadWindow firstwindowtofinish, DownloadWindowsContainer containerWindow) {
-		Download lastdownloadtofinish = lastwindowtofinish.getDownload();
-		Download firstdownloadtofinish = firstwindowtofinish.getDownload();
-		firstdownloadtofinish.addObserver(new Observer() {
-			
-			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
-				// TODO Auto-generated method stub
-				if(complete && (infos >= downloadProps.getSize())) {
-					if(!lastdownloadtofinish.isAlive()) {
-						containerWindow.removeDownloadWindow(lastwindowtofinish);
-						String audiopathfilename = downloadDirs.getDestinationDir() + audioDownloadProps.getFilename();
-						String videopathfilename = downloadDirs.getDestinationDir() + downloadProps.getFilename();
-						String outputpathfilename = downloadDirs.getDestinationDir() + downloadProps.getFilename() + ".merging." + downloadProps.getSubType();
-						String[] cmd = {downloadDirs.getFfmpeg(), "-i", audiopathfilename, "-i", videopathfilename, "-acodec", "copy", "-vcodec", "copy", outputpathfilename};
-						ProcessBuilder pb = new ProcessBuilder(cmd);
-						try {
-							Process commandProcess = pb.start();
-							try {
-								commandProcess.waitFor();
-								new File(audiopathfilename).delete();
-								new File(videopathfilename).delete();
-								new File(outputpathfilename).renameTo(new File(videopathfilename));
-								
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
+	void mergeAudioVideo() {
+		String audiopathfilename = downloadDirs.getDestinationDir() + audioDownloadProps.getFilename();
+		String videopathfilename = downloadDirs.getDestinationDir() + downloadProps.getFilename();
+		String outputpathfilename = downloadDirs.getDestinationDir() + downloadProps.getFilename() + ".merging." + downloadProps.getSubType();
+		String[] cmd = {downloadDirs.getFfmpeg(), "-i", audiopathfilename, "-i", videopathfilename, "-acodec", "copy", "-vcodec", "copy", outputpathfilename};
+		ProcessBuilder pb = new ProcessBuilder(cmd);
+		try {
+			Process commandProcess = pb.start();
+			try {
+				commandProcess.waitFor();
+				new File(audiopathfilename).delete();
+				new File(videopathfilename).delete();
+				System.out.println("Stop deleting my files");
+				new File(outputpathfilename).renameTo(new File(videopathfilename));
+				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
 	
 	
 	
