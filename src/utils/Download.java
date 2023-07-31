@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import gui.Observable;
 import gui.Observer;
 
@@ -16,9 +18,9 @@ public class Download extends Thread implements Observable {
 	 * 
 	 */
 	private DownloadProps downloadProps = null;
-	private StatisticsManager staticsticsManager;
+	private StatisticsManager statisticsManager;
 	private ArrayList<Observer> listObserver = new ArrayList<Observer>();
-	private ArrayList<Integer> subdownloadsNumbersNotComplete = null;
+	private ArrayList<Integer> notCompleteIds = new ArrayList<Integer>();
 	private File[] filesOfSubDownloads;
 	private File downloadedFile;
 	private long downloaded = 0;
@@ -26,6 +28,7 @@ public class Download extends Thread implements Observable {
 	private int numberOfSubDownloadsNotCompleted = 0;
 	private int numberOfSubDownloads;
 	private boolean complete = false;
+	private boolean suspend = false;
 	private int attempt = 0;
 	
 	
@@ -64,30 +67,29 @@ public class Download extends Thread implements Observable {
 			if(iscompleted)
 				break;
 			else {
-				if(this.getAttempt() == 0) {
-					this.subdownloadsNumbersNotComplete = null;
-					this.staticsticsManager.pause();
-					while(!staticsticsManager.isSuspended()) Thread.yield();
-				}
-				else {
-					this.setAttempt(this.getAttempt() - 1);
-					System.out.println("Attempt " + this.getAttempt());
-					this.resetNumberOfSubDownloadNotComplete();
-					this.subdownloadsNumbersNotComplete = new ArrayList<>();
-					for (int i = 0; i < filesOfSubDownloads.length; i++) {
-						if(filesOfSubDownloads[i] == null) {
-							this.subdownloadsNumbersNotComplete.add(i);
-						}
+				synchronized (this) {
+					if(this.getAttempt() == 0) {
+						suspend = true;
+						this.statisticsManager.pause();
+						while(!statisticsManager.isSuspended()) Thread.yield();
+						attempt = this.getDownloadProps().getSubDownloadCount();
 					}
+					else {
+						this.setAttempt(this.getAttempt() - 1);
+						suspend = false;
+						this.statisticsManager.reset();
+						System.out.println("Attempt " + this.getAttempt());
+					}
+					this.reset();
+					this.updateObserver();
 				}
-				this.updateObserver();
 			}
 		}
 		int numberofcomplete = this.getNumberOfSubDownloadsCompleted();
 		if(numberofcomplete == numberOfSubDownloads) {
 			System.out.println("Begining of sub download files concatenation");
-			staticsticsManager.complete();
-			while(staticsticsManager.isAlive()) Thread.yield();
+			statisticsManager.complete();
+			while(statisticsManager.isAlive()) Thread.yield();
 			downloadProps.setFilename(DownloadControl.generateFilename(DownloadDirs.getInstance().getDestinationDir(), downloadProps.getFilename()));
 			downloadedFile = new File(DownloadDirs.getInstance().getDestinationDir() + downloadProps.getFilename());
 			try {
@@ -150,9 +152,16 @@ public class Download extends Thread implements Observable {
 		long downloaded = this.getDownloaded();
 		
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, false, this.subdownloadsNumbersNotComplete, downloaded);
+			obs.update(iscompleted, suspend, downloaded);
 	}
 	
+	private void reset() {
+		numberOfSubDownloadsCompleted = 0;
+		numberOfSubDownloadsNotCompleted = 0;
+		notCompleteIds = new ArrayList<>();
+		for (int i = 0; i < numberOfSubDownloads; i++)
+			filesOfSubDownloads[i] = null;
+	}
 
 	@Override
 	public void delObserver() {
@@ -160,29 +169,17 @@ public class Download extends Thread implements Observable {
 		this.listObserver = new ArrayList<Observer>();
 	}
 
-	public StatisticsManager getStaticsticsManager() {
-		return staticsticsManager;
+	public StatisticsManager getStatisticsManager() {
+		return statisticsManager;
 	}
 
-	public void setStaticsticsManager(StatisticsManager staticsticsManager) {
-		this.staticsticsManager = staticsticsManager;
+	public void setStaticsticsManager(StatisticsManager statisticsmanager) {
+		this.statisticsManager = statisticsmanager;
 	}
 
 	private synchronized int getNumberOfSubDownloadsCompleted() {
 		return numberOfSubDownloadsCompleted;
 	}
-	
-		
-	public synchronized void reset() {
-		attempt = this.getDownloadProps().getSubDownloadCount();
-		numberOfSubDownloadsCompleted = 0;
-		numberOfSubDownloadsNotCompleted = 0;
-		complete = false;
-		//suspend = false;
-		for (int i = 0; i < numberOfSubDownloads; i++)
-			filesOfSubDownloads[i] = null;
-	}
-	
 
 	public synchronized void notifyComplete(int subdownloadnumber, File file) {
 		filesOfSubDownloads[subdownloadnumber] = file;
@@ -192,24 +189,44 @@ public class Download extends Thread implements Observable {
 		if((numberOfSubDownloadsCompleted + numberOfSubDownloadsNotCompleted) == numberOfSubDownloads)
 			notify();
 	}
-
-
-	public synchronized void notifyNotComplete() {
-		this.numberOfSubDownloadsNotCompleted++;
-		if((numberOfSubDownloadsCompleted + numberOfSubDownloadsNotCompleted) == numberOfSubDownloads) {
-			System.out.println("wake download up for restart");
-			notify();
+	
+	
+	boolean hasNotifyNotComplete(int subdownloadnumber) {
+		
+		boolean result = false;
+		
+		if(notCompleteIds != null) {
+			for (Iterator<Integer> iterator = notCompleteIds.iterator(); iterator.hasNext();) {
+				Integer integer = (Integer) iterator.next();
+				if(integer.intValue() == subdownloadnumber) {
+					result = true;
+					break;
+				}
+			}
 		}
+		
+		return result;
 	}
-	
-	
-	private synchronized void resetNumberOfSubDownloadNotComplete() {
-		this.numberOfSubDownloadsNotCompleted = 0;
+
+
+	public synchronized void notifyNotComplete(int subdownloadnumber) {
+		if(!hasNotifyNotComplete(subdownloadnumber)) {
+			notCompleteIds.add(subdownloadnumber);
+			this.numberOfSubDownloadsNotCompleted++;
+			if((numberOfSubDownloadsCompleted + numberOfSubDownloadsNotCompleted) == numberOfSubDownloads) {
+				System.out.println("wake download up for restart");
+				notify();
+			}
+		}
 	}
 	
 	
 	private synchronized boolean isCompleted() {
 		return complete;
+	}
+	
+	public synchronized boolean hasSuspended() {
+		return suspend;
 	}
 	
 

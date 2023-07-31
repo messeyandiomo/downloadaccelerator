@@ -3,8 +3,6 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -41,13 +39,13 @@ public class DownloadWindowButton extends JButton {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(button.isVisible())
 						button.setVisible(false);
 				}
-				else if(download.getStaticsticsManager().isSuspended()) {
+				else if(download.getStatisticsManager().isSuspended()) {
 					if(!resume)
 						button.setVisible(false);
 					if(resume)

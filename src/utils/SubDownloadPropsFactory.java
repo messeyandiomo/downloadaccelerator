@@ -1,8 +1,6 @@
 package utils;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -17,7 +15,7 @@ public class SubDownloadPropsFactory extends Thread {
 	private String filePathName;
 	private SubDownloadPropsFactoriesManager subDownloadPropsFactoriesManager;
 	private InputStream inputStream = null;
-	private OutputStream outputStream = null;
+	private FileOutputStream outputStream = null;
 	private URL url;
 	
 	
@@ -38,51 +36,7 @@ public class SubDownloadPropsFactory extends Thread {
 	public void run() {
 		
 		File file = new File(filePathName);
-		long downloaded = checkFile(file);
-		if(downloaded >= 0) {
-			if(downloaded > 0) {
-				this.setDownloaded(downloaded);
-				this.setFirstOctet(firstOctet + downloaded);
-			}
-		}
-		this.subDownloadPropsFactoriesManager.recordSubDownloadProps(subDownloadNumber, new SubDownloadProps(firstOctet, this.downloaded, size, this.getFileType(), file, url));
-	}
-	
-	
-	long checkFile(File file) {
-		
-		long retour = 0;//size already downloaded
-		
-		if(file.exists()) {
-			InputStream in = null;
-			try {
-				in = new FileInputStream(file);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return -1;
-			}
-			byte[] buf = new byte[1024];
-			int b;
-			try {
-				while((b = in.read(buf)) != -1) {
-					retour += b;
-				}
-				in.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				try {
-					in.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				return -2;
-			}
-		}
-		return retour;
-		
+		this.subDownloadPropsFactoriesManager.recordSubDownloadProps(subDownloadNumber, new SubDownloadProps(firstOctet, size, this.getFileType(), file, url));
 	}
 
 
@@ -161,7 +115,7 @@ public class SubDownloadPropsFactory extends Thread {
 	}
 
 
-	public void setOutputStream(OutputStream outputStream) {
+	public void setOutputStream(FileOutputStream outputStream) {
 		this.outputStream = outputStream;
 	}
 

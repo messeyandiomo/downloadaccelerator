@@ -1,7 +1,5 @@
 package gui;
 import java.awt.Color;
-import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.JProgressBar;
 import javax.swing.border.Border;
@@ -22,7 +20,7 @@ public class SubDownloadProgressBar extends JProgressBar {
 	private Border originalBorder;
 	private long previousInfos = 0;
 	private Observer subDownloadObserver;
-	private Observer downloadObserver;
+	
 	
 	public SubDownloadProgressBar(int arg0, int arg1) {
 		super(arg0, arg1);
@@ -45,7 +43,7 @@ public class SubDownloadProgressBar extends JProgressBar {
 		this.subDownloadObserver = new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(infos != previousInfos) {
 					previousInfos = infos;
@@ -64,22 +62,7 @@ public class SubDownloadProgressBar extends JProgressBar {
 			}
 		};
 		
-		this.downloadObserver = new Observer() {
-			
-			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
-				// TODO Auto-generated method stub
-				if(!complete) {
-					if(download.getStaticsticsManager().isSuspended()) {
-						subDownloadProgressBar.setForeground(Color.LIGHT_GRAY);
-						subDownloadProgressBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-					}
-				}
-			}
-		};
-		
 		this.subDownload.addObserver(subDownloadObserver);
-		this.download.addObserver(downloadObserver);
 	}
 
 	/**
@@ -97,12 +80,6 @@ public class SubDownloadProgressBar extends JProgressBar {
 	}
 	
 	
-	public void reset() {
-		//this.previousInfos = this.download.getDownloadProps().getSubDownloadProps(this.subDownloadNumber).getDownloaded();
-		this.subDownload = new SubDownload(this.download, this.subDownloadNumber, false);
-		this.subDownload.addObserver(subDownloadObserver);
-	}
-	
 	public SubDownload getSubDownload() {
 		return this.subDownload;
 	}
@@ -110,8 +87,17 @@ public class SubDownloadProgressBar extends JProgressBar {
 	public void pause() {
 		if(this.subDownload.isAlive())
 			this.subDownload.pause();
+		subDownloadProgressBar.setForeground(Color.LIGHT_GRAY);
+		subDownloadProgressBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 	}
 	
+	public void restart() {
+		subDownloadProgressBar.setForeground(originalColor);
+		subDownloadProgressBar.setBorder(originalBorder);
+		this.previousInfos = 0;
+		this.subDownload = new SubDownload(download, subDownloadNumber, true);
+		this.subDownload.addObserver(subDownloadObserver);
+	}
 	
 	public void revive() {
 		if(this.subDownload.isAlive())

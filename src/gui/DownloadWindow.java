@@ -126,7 +126,37 @@ public class DownloadWindow extends JInternalFrame{
 		((BasicInternalFrameUI)getUI()).setNorthPane(null);
 		this.pack();
 		this.setVisible(true);
-		this.setFont(fontSize);		
+		this.setFont(fontSize);
+		
+		this.download.addObserver(new Observer() {
+			
+			@Override
+			public void update(boolean complete, boolean suspend, long infos) {
+				// TODO Auto-generated method stub
+				if(complete) {
+					if(containerSubDownloadWindows.isVisible())
+						containerSubDownloadWindows.setVisible(false);
+				}
+				else {
+					if(suspend) {
+						if(!statisticsManager.isSuspended())
+							statisticsManager.pause();
+						containerSubDownloadWindows.pause();
+						/** the position of these instructions is very important. here is after **/
+						//size.reset();
+						//duration.reset();
+					}
+					else {
+						/** the position of these instructions is very important. there is before **/
+						size.reset();
+						duration.reset();
+						if(statisticsManager.isSuspended())
+							statisticsManager.restart();
+						containerSubDownloadWindows.restart();
+					}
+				}
+			}
+		});
 	}
 	
 	
@@ -173,6 +203,8 @@ public class DownloadWindow extends JInternalFrame{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
+			if(!statisticsManager.isSuspended())
+				statisticsManager.pause();
 			containerSubDownloadWindows.pause();
 			buttonSuspend.setVisible(false);
 			buttonResume.setVisible(true);
@@ -186,7 +218,19 @@ public class DownloadWindow extends JInternalFrame{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			// TODO Auto-generated method stub
-			containerSubDownloadWindows.revive();
+			if(download.hasSuspended()) {
+				size.reset();
+				duration.reset();
+				statisticsManager.reset();
+				if(statisticsManager.isSuspended())
+					statisticsManager.restart();
+				containerSubDownloadWindows.restart();
+			}
+			else {
+				if(statisticsManager.isSuspended())
+					statisticsManager.revive();
+				containerSubDownloadWindows.revive();
+			}
 			buttonResume.setVisible(false);
 			buttonSuspend.setVisible(true);
 		}

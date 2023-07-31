@@ -99,7 +99,7 @@ public class SubDownloadPropsFactoriesManager extends Thread implements Observab
 	public void updateObserver() {
 		// TODO Auto-generated method stub
 		for(Observer obs : this.listObserver)
-			obs.update(true, false, null, 0);
+			obs.update(true, false, 0);
 	}
 
 

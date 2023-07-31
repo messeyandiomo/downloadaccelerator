@@ -72,10 +72,19 @@ public class StatisticsManager extends Thread implements Observable {
 		suspend = true;
 	}
 	
+	public synchronized void restart() {
+		this.downloaded = 0;
+		this.suspend = false;
+		notify();
+	}
 	
 	public synchronized void revive() {
-		suspend = false;
+		this.suspend = false;
 		notify();
+	}
+	
+	public synchronized void reset() {
+		this.downloaded = 0;
 	}
 	
 	
@@ -106,7 +115,7 @@ public class StatisticsManager extends Thread implements Observable {
 		boolean issuspended = this.isSuspended();
 		long downloadedpersecond = this.getDownloaded();
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, issuspended, null, downloadedpersecond);
+			obs.update(iscompleted, issuspended, downloadedpersecond);
 	}
 
 	@Override

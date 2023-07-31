@@ -1,6 +1,5 @@
 package gui;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
@@ -13,7 +12,6 @@ public class SubDownloadsContainer extends JPanel {
 	private SubDownloadProgressBar[] subDownloadProgressBarArray;
 	private int subDownloadsCount;
 	private Download download;
-	private JPanel subDownloadsContainer;
 	
 	
 	/*** newer constructor ***/
@@ -30,26 +28,7 @@ public class SubDownloadsContainer extends JPanel {
 			subDownloadProgressBarArray[i] = new SubDownloadProgressBar(this.download, i, 0, subDownloadwidth);
 			subDownloadProgressBarArray[i].setPreferredSize(new Dimension(subDownloadwidth, height));
 			this.add(subDownloadProgressBarArray[i]);
-		}
-		
-		this.subDownloadsContainer = this;
-		
-		this.download.addObserver(new Observer() {
-			
-			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
-				// TODO Auto-generated method stub
-				if(complete) {
-					if(subDownloadsContainer.isVisible())
-						subDownloadsContainer.setVisible(false);
-				}
-				else if(subdownloadnumbersnotcomplete != null) {
-					for (int i = 0; i < subdownloadnumbersnotcomplete.size(); i++) {
-						subDownloadProgressBarArray[subdownloadnumbersnotcomplete.get(i)].reset();
-					}
-				}
-			}
-		});		
+		}	
 	}
 	
 
@@ -70,18 +49,22 @@ public class SubDownloadsContainer extends JPanel {
 	}
 	
 	public void pause() {
-		for (int i = 0; i < subDownloadsCount; i++) {
+		for (int i = 0; i < subDownloadsCount; i++)
 			subDownloadProgressBarArray[i].pause();
-		}
-		download.getStaticsticsManager().pause();
 	}
 	
+	
 	public void revive() {
-		download.getStaticsticsManager().revive();
-		download.reset();
-		for (int i = 0; i < subDownloadsCount; i++) {
+		for (int i = 0; i < subDownloadsCount; i++)
 			subDownloadProgressBarArray[i].revive();
-		}
+	}
+	
+	public void restart() {
+		for (int i = 0; i < subDownloadsCount; i++)
+			this.download.getDownloadProps().getSubDownloadProps(i).resetDownloaded();
+		/** don't try to put these instructions into same brackets **/
+		for (int i = 0; i < subDownloadsCount; i++)
+			subDownloadProgressBarArray[i].restart();
 	}
 
 }

@@ -1,8 +1,6 @@
 package gui;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.ArrayList;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,7 +42,7 @@ public class DownloadWindowLabel extends JPanel {
 		// TODO Auto-generated constructor stub
 		super();
 		this.download = download;
-		this.statisticsManager = download.getStaticsticsManager();
+		this.statisticsManager = download.getStatisticsManager();
 		this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 		this.add(labelValue);
 		this.setMaximumSize(dim);
@@ -53,7 +51,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(DownloadWindowLabel.this.statisticsManager.isSuspended()) {
@@ -69,12 +67,10 @@ public class DownloadWindowLabel extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(complete)
 					setValue("");
-				/*if(infos == size)
-					setValue("");*/
 			}
 		});
 	}
@@ -96,7 +92,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(getTitle().contentEquals("Size: ")) {
 					if(complete)
@@ -128,7 +124,9 @@ public class DownloadWindowLabel extends JPanel {
 	}
 	
 	
-	
+	public void reset() {
+		this.currentSize = 0;
+	}
 
 	public String getValue() {
 		return this.labelValue.getText();

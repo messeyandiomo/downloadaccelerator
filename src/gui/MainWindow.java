@@ -299,7 +299,7 @@ public class MainWindow extends JFrame{
 		subDownloadPropsFactoriesManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete, long infos) {
+			public void update(boolean complete, boolean suspend, long infos) {
 				// TODO Auto-generated method stub
 				if(complete)
 					buttonStart.setEnabled(true);
@@ -518,8 +518,8 @@ public class MainWindow extends JFrame{
 		DownloadWindowsContainer containerWindow = DownloadWindowsContainer.getInstance();
 		
 		public void actionPerformed(ActionEvent ev) {
-			newDownloadVideo = new DownloadWindow(downloadProps);
 			downloadProps.setFilename(parameterFileName.getText());
+			newDownloadVideo = new DownloadWindow(downloadProps);
 			containerWindow.addDownloadWindow(newDownloadVideo);
 			if(audioDownloadProps != null) {
 				newDownloadAudio = new DownloadWindow(audioDownloadProps);
@@ -528,8 +528,7 @@ public class MainWindow extends JFrame{
 				newDownloadAudio.getDownload().addObserver(new Observer() {
 					
 					@Override
-					public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete,
-							long infos) {
+					public void update(boolean complete, boolean suspend, long infos) {
 						// TODO Auto-generated method stub
 						if(complete && (infos >= audioDownloadProps.getSize())) {
 							if(!newDownloadVideo.getDownload().isAlive()) {
@@ -550,8 +549,7 @@ public class MainWindow extends JFrame{
 				newDownloadVideo.getDownload().addObserver(new Observer() {
 					
 					@Override
-					public void update(boolean complete, boolean suspend, ArrayList<Integer> subdownloadnumbersnotcomplete,
-							long infos) {
+					public void update(boolean complete, boolean suspend, long infos) {
 						// TODO Auto-generated method stub
 						if(complete && (infos >= downloadProps.getSize())) {
 							if(!newDownloadAudio.getDownload().isAlive()) {

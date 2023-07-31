@@ -1,34 +1,34 @@
 package utils;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SubDownloadProps {
 	
 	private long firstOctet;
-	private long downloaded;
+	private long downloaded = 0;
 	private long size;
 	private File file;
 	private String filetype = null;
 	private URL url;
 	private InputStream inputStream = null;
-	private OutputStream outputStream = null;
+	private FileOutputStream outputStream = null;
 	
 	
 
-	public SubDownloadProps(long firstoctet, long downloaded, long size, String filetype, File file, URL url) {
+	public SubDownloadProps(long firstoctet, long size, String filetype, File file, URL url) {
 		// TODO Auto-generated constructor stub
 		this.setFirstOctet(firstoctet);
-		this.setDownloaded(downloaded);
 		this.setSize(size);
 		this.setFile(file);
 		this.setUrl(url);
 		this.setFiletype(filetype);
+		this.setDownloaded();
 		if(this.downloaded != this.size) {
 			this.createInputStream();
 			this.createOutputStream();
@@ -49,7 +49,7 @@ public class SubDownloadProps {
 			//e.printStackTrace();
 			return -1;
 		}
-		connexion.setRequestProperty("Range", "bytes=" + firstOctet + "-" + (firstOctet + size - downloaded - 1));
+		connexion.setRequestProperty("Range", "bytes=" + (this.firstOctet + this.downloaded) + "-" + (this.firstOctet + size));
 		connexion.setConnectTimeout(10000);
 		connexion.setReadTimeout(10000);
 		int response = 0;
@@ -105,18 +105,61 @@ public class SubDownloadProps {
 	public void setFirstOctet(long firstoctet) {
 		this.firstOctet = firstoctet;
 	}
-
-	public long getDownloaded() {
-		return downloaded;
+	
+	
+	long getDownloadedFileSize() {
+		
+		long retour = 0;//size already downloaded
+		
+		if(this.file.exists()) {
+			InputStream in = null;
+			try {
+				in = new FileInputStream(this.file);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return -1;
+			}
+			byte[] buf = new byte[1024];
+			int b;
+			try {
+				while((b = in.read(buf)) != -1) {
+					retour += b;
+				}
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				try {
+					in.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				return -2;
+			}
+		}
+		return retour;
 	}
-
-	public void setDownloaded(long downloaded) {
-		this.downloaded = downloaded;
+	
+	
+	public long getDownloaded() {
+		return this.downloaded;
+	}
+	
+	
+	private void setDownloaded() {
+		long downloaded = getDownloadedFileSize();
+		if(downloaded >= 0)
+			this.downloaded = downloaded;
+	}
+	
+	public void resetDownloaded() {
+		this.setDownloaded();
 	}
 	
 	public void update(long downloaded) {
 		this.downloaded += downloaded;
-		this.firstOctet += downloaded;
 	}
 	
 
@@ -138,11 +181,11 @@ public class SubDownloadProps {
 		this.inputStream = inputStream;
 	}
 
-	public OutputStream getOutputStream() {
+	public FileOutputStream getOutputStream() {
 		return outputStream;
 	}
 
-	public void setOutputStream(OutputStream outputStream) {
+	public void setOutputStream(FileOutputStream outputStream) {
 		this.outputStream = outputStream;
 	}
 
@@ -181,5 +224,6 @@ public class SubDownloadProps {
 	public void setFiletype(String filetype) {
 		this.filetype = filetype;
 	}
+	
 
 }
