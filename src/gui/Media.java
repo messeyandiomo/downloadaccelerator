@@ -166,6 +166,8 @@ public class Media extends JInternalFrame {
 				else {
 					if(mediaproperties.get("contentLength") != null)
 						new MainWindow(mediaproperties.get("title").asText(), mediaproperties.get("mimeType").asText().split(";")[0], Long.parseLong(mediaproperties.get("contentLength").asText()), mediaproperties.get("signatureCipher").asText(), mediaproperties.get("playerUrl").asText());
+					else
+						new MainWindow(mediaproperties.get("title").asText(), mediaproperties.get("mimeType").asText().split(";")[0], mediaproperties.get("signatureCipher").asText(), mediaproperties.get("playerUrl").asText());
 				}
 			}
 			/** close the container of medias **/

@@ -268,7 +268,22 @@ public class MainWindow extends JFrame{
 	public MainWindow(String filename, String fileType, long contentLength, String signatureCipher, String playerUrl) {
 		
 		this(filename, fileType, contentLength, new Youtube(signatureCipher, playerUrl, downloadDirs.getCacheDir()).decryptUrl());
-	}	
+	}
+	
+	/**
+	 * The video URL is ciphered and have to be decipher plus we do not have file size
+	 * 
+	 * @param filename
+	 * @param fileType
+	 * @param signatureCipher
+	 * @param playerUrl
+	 */
+	public MainWindow(String filename, String fileType, String signatureCipher, String playerUrl) {
+		
+		this(new Youtube(signatureCipher, playerUrl, downloadDirs.getCacheDir()).decryptUrl(), true);
+		this.buttonUrl.doClick();
+		this.parameterFileName.setText(filename + "." + fileType.split("/")[1]);
+	}
 	
 	/**
 	 * The video and audio URLS are ciphered and have to be decipher then the video and audio will be download and finally merge

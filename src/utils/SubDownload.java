@@ -102,23 +102,14 @@ public class SubDownload extends Thread implements Observable {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						while(myself.isAlive()) {
+						if(myself.isAlive()) {
 							myself.interrupt();
-							synchronized (this) {
-								try {
-									wait(100);
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
+							myself.closeStreams();
+							download.notifyNotComplete(subdownloadnumber);
+							System.out.println(subdownloadnumber + " not complete for having make more than 10 seconds");
 						}
-						//myself.interrupt();
-						myself.closeStreams();
-						download.notifyNotComplete(subdownloadnumber);
-						System.out.println(subdownloadnumber + " not complete for having make more than 10 seconds");
 					}
-				}, 10000);
+				}, SubDownloadProps.getReadtimeout() + 5000);
 				try {
 					b = inputStream.read(buf);
 					subDownloadTimer.cancel();

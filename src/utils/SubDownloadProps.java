@@ -18,6 +18,8 @@ public class SubDownloadProps {
 	private URL url;
 	private InputStream inputStream = null;
 	private FileOutputStream outputStream = null;
+	private static final int connectTimeout = 10000;
+	private static final int readTimeout = 10000;
 	
 	
 
@@ -50,8 +52,8 @@ public class SubDownloadProps {
 			return -1;
 		}
 		connexion.setRequestProperty("Range", "bytes=" + (this.firstOctet + this.downloaded) + "-" + (this.firstOctet + size));
-		connexion.setConnectTimeout(10000);
-		connexion.setReadTimeout(10000);
+		connexion.setConnectTimeout(getConnectTimeout());
+		connexion.setReadTimeout(getReadtimeout());
 		int response = 0;
 		try {
 			response = connexion.getResponseCode();
@@ -155,6 +157,15 @@ public class SubDownloadProps {
 	}
 	
 	public void resetDownloaded() {
+		if(this.outputStream != null) {
+			try {
+				this.outputStream.flush();
+				this.outputStream.getFD().sync();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		this.setDownloaded();
 	}
 	
@@ -223,6 +234,20 @@ public class SubDownloadProps {
 	
 	public void setFiletype(String filetype) {
 		this.filetype = filetype;
+	}
+
+
+
+
+	public static int getConnectTimeout() {
+		return connectTimeout;
+	}
+
+
+
+
+	public static int getReadtimeout() {
+		return readTimeout;
 	}
 	
 
