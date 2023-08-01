@@ -51,7 +51,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(DownloadWindowLabel.this.statisticsManager.isSuspended()) {
@@ -67,7 +67,7 @@ public class DownloadWindowLabel extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
 				if(complete)
 					setValue("");
@@ -92,31 +92,39 @@ public class DownloadWindowLabel extends JPanel {
 		this.statisticsManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
-				if(getTitle().contentEquals("Size: ")) {
-					if(complete)
-						labelContainer.setVisible(false);
-					else {
+				if(shutdown) {
+					if(getTitle().contentEquals("Size: ")) {
 						currentSize += infos;
 						setValue(DownloadControl.convertSize(currentSize) + "/" + fileSizeInString);
 					}
 				}
-				else if(getTitle().contentEquals("Speed: ")) {
-					if(complete||DownloadWindowLabel.this.statisticsManager.isSuspended())
-						labelContainer.setVisible(false);
-					else {
-						labelContainer.setVisible(true);
-						setValue(DownloadControl.convertSize(infos) + "/s");
+				else {
+					if(getTitle().contentEquals("Size: ")) {
+						if(complete)
+							labelContainer.setVisible(false);
+						else {
+							currentSize += infos;
+							setValue(DownloadControl.convertSize(currentSize) + "/" + fileSizeInString);
+						}
 					}
-				}
-				else if(getTitle().contentEquals("Duration: ")) {
-					if(complete||DownloadWindowLabel.this.statisticsManager.isSuspended())
-						labelContainer.setVisible(false);
-					else {
-						currentSize += infos;
-						labelContainer.setVisible(true);
-						setValue(duration(currentSize, infos, filesize));
+					else if(getTitle().contentEquals("Speed: ")) {
+						if(complete||DownloadWindowLabel.this.statisticsManager.isSuspended())
+							labelContainer.setVisible(false);
+						else {
+							labelContainer.setVisible(true);
+							setValue(DownloadControl.convertSize(infos) + "/s");
+						}
+					}
+					else if(getTitle().contentEquals("Duration: ")) {
+						if(complete||DownloadWindowLabel.this.statisticsManager.isSuspended())
+							labelContainer.setVisible(false);
+						else {
+							currentSize += infos;
+							labelContainer.setVisible(true);
+							setValue(duration(currentSize, infos, filesize));
+						}
 					}
 				}
 			}

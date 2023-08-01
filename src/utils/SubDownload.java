@@ -50,7 +50,7 @@ public class SubDownload extends Thread implements Observable {
 		if(downloaded > 0) {
 			if(shutdown) {
 				this.updateObserver();
-				this.download.getStatisticsManager().update(downloaded);
+				this.download.getStatisticsManager().update(downloaded, shutdown);
 			}
 			if(downloaded < size)
 				downloadFile();
@@ -122,7 +122,7 @@ public class SubDownload extends Thread implements Observable {
 							outputStream.getFD().sync();
 							this.setDownloaded(remainByteCount);
 							this.subDownloadProps.update(remainByteCount);
-							this.download.getStatisticsManager().update(remainByteCount);
+							this.download.getStatisticsManager().update(remainByteCount, false);
 							this.updateObserver();
 							remainByteCount = 0;
 							break;
@@ -133,7 +133,7 @@ public class SubDownload extends Thread implements Observable {
 							outputStream.getFD().sync();
 							this.setDownloaded(b);
 							this.subDownloadProps.update(b);
-							this.download.getStatisticsManager().update(b);
+							this.download.getStatisticsManager().update(b, false);
 							this.updateObserver();
 							remainByteCount -= b;
 						}
@@ -277,7 +277,7 @@ public class SubDownload extends Thread implements Observable {
 		long downloaded = this.getDownloaded();
 		boolean issuspended = this.isSuspended();
 		for(Observer obs : this.listObserver)
-			obs.update(false, issuspended, downloaded);
+			obs.update(false, issuspended, downloaded, false);
 	}
 
 

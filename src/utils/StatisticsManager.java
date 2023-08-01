@@ -8,6 +8,7 @@ public class StatisticsManager extends Thread implements Observable {
 	
 	private boolean suspend = false;
 	private boolean complete = false;
+	private boolean shutdown = false;
 	private long downloaded = 0;
 	private ArrayList<Observer> listObserver = new ArrayList<Observer>();
 
@@ -58,8 +59,9 @@ public class StatisticsManager extends Thread implements Observable {
 	}
 	
 	
-	public synchronized void update(long sizeAdded) {
+	public synchronized void update(long sizeAdded, boolean shutdown) {
 		downloaded += sizeAdded;
+		this.shutdown = shutdown;
 	}
 	
 	
@@ -113,15 +115,27 @@ public class StatisticsManager extends Thread implements Observable {
 		// TODO Auto-generated method stub
 		boolean iscompleted = this.isCompleted();
 		boolean issuspended = this.isSuspended();
+		boolean shutdown = this.getShutdown();
 		long downloadedpersecond = this.getDownloaded();
+		
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, issuspended, downloadedpersecond);
+			obs.update(iscompleted, issuspended, downloadedpersecond, shutdown);
+		this.setShutdown(false);
 	}
 
 	@Override
 	public void delObserver() {
 		// TODO Auto-generated method stub
 		this.listObserver = new ArrayList<Observer>();
+	}
+
+
+	private synchronized boolean getShutdown() {
+		return shutdown;
+	}
+	
+	private synchronized void setShutdown(boolean shutdown) {
+		this.shutdown = shutdown;
 	}
 
 }

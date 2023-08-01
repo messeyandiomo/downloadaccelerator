@@ -152,7 +152,7 @@ public class Download extends Thread implements Observable {
 		long downloaded = this.getDownloaded();
 		
 		for(Observer obs : this.listObserver)
-			obs.update(iscompleted, suspend, downloaded);
+			obs.update(iscompleted, suspend, downloaded, false);
 	}
 	
 	private void reset() {

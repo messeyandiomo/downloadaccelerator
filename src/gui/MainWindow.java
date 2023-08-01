@@ -314,7 +314,7 @@ public class MainWindow extends JFrame{
 		subDownloadPropsFactoriesManager.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
 				if(complete)
 					buttonStart.setEnabled(true);
@@ -543,7 +543,7 @@ public class MainWindow extends JFrame{
 				newDownloadAudio.getDownload().addObserver(new Observer() {
 					
 					@Override
-					public void update(boolean complete, boolean suspend, long infos) {
+					public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 						// TODO Auto-generated method stub
 						if(complete && (infos >= audioDownloadProps.getSize())) {
 							if(!newDownloadVideo.getDownload().isAlive()) {
@@ -564,7 +564,7 @@ public class MainWindow extends JFrame{
 				newDownloadVideo.getDownload().addObserver(new Observer() {
 					
 					@Override
-					public void update(boolean complete, boolean suspend, long infos) {
+					public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 						// TODO Auto-generated method stub
 						if(complete && (infos >= downloadProps.getSize())) {
 							if(!newDownloadAudio.getDownload().isAlive()) {

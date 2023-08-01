@@ -47,7 +47,7 @@ public class FileConcatContainer extends JPanel {
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(!fileConcatContainer.isVisible())
@@ -70,7 +70,7 @@ public class FileConcatContainer extends JPanel {
 		this.mergeFile.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
 				if(!complete) {
 					if(!fileConcatContainer.isVisible())

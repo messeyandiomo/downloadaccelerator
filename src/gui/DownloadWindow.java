@@ -131,7 +131,7 @@ public class DownloadWindow extends JInternalFrame{
 		this.download.addObserver(new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
 				if(complete) {
 					if(containerSubDownloadWindows.isVisible())
@@ -142,9 +142,6 @@ public class DownloadWindow extends JInternalFrame{
 						if(!statisticsManager.isSuspended())
 							statisticsManager.pause();
 						containerSubDownloadWindows.pause();
-						/** the position of these instructions is very important. here is after **/
-						//size.reset();
-						//duration.reset();
 					}
 					else {
 						/** the position of these instructions is very important. there is before **/

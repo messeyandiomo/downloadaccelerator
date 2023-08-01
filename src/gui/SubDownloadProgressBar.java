@@ -43,7 +43,7 @@ public class SubDownloadProgressBar extends JProgressBar {
 		this.subDownloadObserver = new Observer() {
 			
 			@Override
-			public void update(boolean complete, boolean suspend, long infos) {
+			public void update(boolean complete, boolean suspend, long infos, boolean shutdown) {
 				// TODO Auto-generated method stub
 				if(infos != previousInfos) {
 					previousInfos = infos;
