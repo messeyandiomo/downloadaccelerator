@@ -21,8 +21,8 @@ apps:
       - gnome
     command: usr/bin/setup.sh
     environment:
-      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
-      JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$SNAPCRAFT_TARGET_ARCH
+      JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
       PATH: /snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$PATH
       LD_LIBRARY_PATH: /snap/gnome-42-2204-sdk/current/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     plugs:
@@ -39,8 +39,8 @@ apps:
       - gnome
     command: usr/bin/setup.sh server
     environment:
-      JAVA_HOME: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH
-      JAVA_BIN: $SNAP/usr/lib/jvm/java-11-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
+      JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$SNAPCRAFT_TARGET_ARCH
+      JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$SNAPCRAFT_TARGET_ARCH/bin/java
       PATH: /snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$PATH
       LD_LIBRARY_PATH: /snap/gnome-42-2204-sdk/current/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     autostart: $SNAPCRAFT_PROJECT_NAME-server.desktop
