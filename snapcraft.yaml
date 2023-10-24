@@ -64,9 +64,9 @@ parts:
       install $SNAPCRAFT_PROJECT_NAME-server.desktop $SNAPCRAFT_PART_INSTALL/autostart
       install setup.sh $SNAPCRAFT_PART_INSTALL/usr/bin
       chmod +x $SNAPCRAFT_PART_INSTALL/usr/bin/setup.sh
-      gradle build && install build/libs/$SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
+      chmod +x build.sh && ./build.sh && cp $SNAPCRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $SNAPCRAFT_PART_INSTALL/
     build-packages:
-      - gradle
+      - openjdk-17-jdk-headless
       - openjdk-17-jre-headless
       - ca-certificates-java
       - ca-certificates

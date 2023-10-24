@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: 17.0.8.1 (Private Build)
+Main-Class: utils.DaServer
+Class-Path: jackson-annotations-2.14.1.jar jackson-core-2.14.1.jar jackson-databind-2.14.1.jar junidecode-0.4.1.jar junidecode-0.4.1-javadoc.jar
