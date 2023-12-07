@@ -16,7 +16,7 @@ public class DownloadDirs {
 	private DownloadDirs() {
 		// TODO Auto-generated constructor stub
 		if(System.getProperty("os.name").matches("Linux")) {
-			this.setRootDir(System.getenv("HOME"));
+			this.setRootDir("/home/" + System.getenv("USER"));
         	this.setDestinationDir(this.getRootDir() + appName);
         	this.setCacheDir(this.getRootDir() + "." + appName);
         	this.setTempDir(this.getCacheDir() + "tmp");
