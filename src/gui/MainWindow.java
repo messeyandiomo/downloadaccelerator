@@ -598,11 +598,10 @@ public class MainWindow extends JFrame{
 			Process commandProcess = pb.start();
 			try {
 				commandProcess.waitFor();
-				new File(audiopathfilename).delete();
-				new File(videopathfilename).delete();
-				System.out.println("Stop deleting my files");
-				new File(outputpathfilename).renameTo(new File(videopathfilename));
-				
+				if(new File(audiopathfilename).delete() && new File(videopathfilename).delete()) {
+					System.out.println("Stop deleting my files");
+					new File(outputpathfilename).renameTo(new File(videopathfilename));
+				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
