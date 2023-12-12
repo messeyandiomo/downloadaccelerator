@@ -597,11 +597,14 @@ public class MainWindow extends JFrame{
 		try {
 			Process commandProcess = pb.start();
 			try {
-				commandProcess.waitFor();
-				if(new File(audiopathfilename).delete() && new File(videopathfilename).delete()) {
-					System.out.println("Stop deleting my files");
-					new File(outputpathfilename).renameTo(new File(videopathfilename));
+				if(commandProcess.waitFor() == 0) {
+					if(new File(audiopathfilename).delete() && new File(videopathfilename).delete()) {
+						System.out.println("Stop deleting my files");
+						new File(outputpathfilename).renameTo(new File(videopathfilename));
+					}
 				}
+				else
+					System.out.println("Problem with exection of the command ffmpeg");
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
