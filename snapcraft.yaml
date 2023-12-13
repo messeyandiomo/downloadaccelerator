@@ -23,8 +23,8 @@ apps:
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH/bin/java
-      PATH: /snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$SNAP/usr/bin:$SNAP/usr/sbin:$PATH
-      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      PATH: $SNAP/usr/bin:$SNAP/usr/sbin:/snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$PATH
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR-linux-gnu:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     plugs:
       - home
       - network
@@ -41,8 +41,8 @@ apps:
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH/bin/java
-      PATH: /snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$SNAP/usr/bin:$SNAP/usr/sbin:$PATH
-      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      PATH: $SNAP/usr/bin:$SNAP/usr/sbin:/snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$PATH
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR-linux-gnu:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     autostart: $CRAFT_PROJECT_NAME-server.desktop
     plugs:
       - home
