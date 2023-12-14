@@ -33,10 +33,7 @@ apps:
       - desktop-legacy
       - x11
       - gnome-42-2204
-      - ffmpeg-2204:
-      	  interface: content
-      	  target: ffmpeg-platform
-      	  default-provider: ffmpeg-2204
+      - ffmpeg-2204
  
   downloadacceleratorserver:
     extensions:
