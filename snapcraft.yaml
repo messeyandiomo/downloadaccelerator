@@ -33,7 +33,6 @@ apps:
       - desktop-legacy
       - x11
       - gnome-42-2204
-      - ffmpeg-2204
  
   downloadacceleratorserver:
     extensions:
@@ -74,3 +73,15 @@ parts:
     stage-packages:
       - openjdk-17-jre
       - openjdk-17-jre-headless
+      - ffmpeg
+      - libavdevice58
+      - libavfilter7
+      - libpostproc55
+      - libavformat58
+      - libavcodec58
+      - libswresample3
+      - libswscale5
+      - libavutil56
+      - libslang2
+      - libglu1-mesa
+      - freeglut3
