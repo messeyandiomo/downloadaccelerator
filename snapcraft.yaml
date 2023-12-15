@@ -19,7 +19,7 @@ apps:
   downloadaccelerator:
     extensions:
       - gnome
-    command: usr/bin/setup.sh
+    command: usr/bin/run.sh
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH/bin/java
@@ -37,7 +37,7 @@ apps:
   downloadacceleratorserver:
     extensions:
       - gnome
-    command: usr/bin/setup.sh server
+    command: usr/bin/run.sh server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH/bin/java
@@ -62,8 +62,8 @@ parts:
       mv images $CRAFT_PART_INSTALL/
       mkdir $CRAFT_PART_INSTALL/autostart
       install $CRAFT_PROJECT_NAME-server.desktop $CRAFT_PART_INSTALL/autostart
-      install setup.sh $CRAFT_PART_INSTALL/usr/bin
-      chmod +x $CRAFT_PART_INSTALL/usr/bin/setup.sh
+      install run.sh $CRAFT_PART_INSTALL/usr/bin
+      chmod +x $CRAFT_PART_INSTALL/usr/bin/run.sh
       chmod +x build.sh && ./build.sh && install $CRAFT_PROJECT_NAME-$SNAPCRAFT_PROJECT_VERSION.jar $CRAFT_PART_INSTALL/
     build-packages:
       - openjdk-17-jdk-headless
