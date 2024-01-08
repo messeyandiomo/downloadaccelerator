@@ -17,21 +17,42 @@ architectures:
 
 apps:
   downloadaccelerator:
+    extensions:
+      - gnome
     command: usr/bin/run.sh
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH/bin/java
-      PATH: $JAVA_HOME/bin:$PATH
-      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/blas:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/lapack:$LD_LIBRARY_PATH
+      PATH: /snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$PATH
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/blas:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/lapack:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    plugs:
+      - home
+      - network
+      - network-bind
+      - desktop
+      - desktop-legacy
+      - x11
+      - gnome-42-2204
  
   downloadacceleratorserver:
+    extensions:
+      - gnome
     command: usr/bin/run.sh server
     environment:
       JAVA_HOME: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH
       JAVA_BIN: $SNAP/usr/lib/jvm/java-17-openjdk-$CRAFT_TARGET_ARCH/bin/java
-      PATH: $JAVA_HOME/bin:$PATH
-      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/blas:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/lapack:$LD_LIBRARY_PATH
+      PATH: /snap/gnome-42-2204-sdk/current/usr/bin:$JAVA_HOME/bin:$PATH
+      LD_LIBRARY_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/blas:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/lapack:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     autostart: $CRAFT_PROJECT_NAME-server.desktop
+    plugs:
+      - home
+      - network
+      - network-bind
+      - desktop
+      - desktop-legacy
+      - x11
+      - gnome-42-2204
+  
 
 parts:
   downloadaccelerator:
